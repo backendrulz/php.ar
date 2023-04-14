@@ -52,7 +52,7 @@ const Layout = ({ children, className = `` }: LayoutProps) => (
           position: `relative`,
           margin: `3px`,
         },
-        'strong::before': {
+        'strong::after': {
           backgroundColor: get(t, `colors.strongBackground`),
           content: '""',
           position: `absolute`,
