@@ -1,0 +1,162 @@
+---
+title: Lo nuevo de PHP 8.1
+date: 2023-04-13
+description: Descubre las principales características de PHP 8.1. Que trae mejoras en rendimiento, seguridad y legibilidad.
+tags:
+  - PHP
+  - '8.1'
+  - cambios
+---
+
+PHP 8.1 se lanzó el pasado 25 de noviembre de 2021. Ya pasó un tiempo pero vale la pena rescatar que esta versión trae consigo varias mejoras y novedades que harán la vida más fácil a los desarrolladores y a los usuarios. En este artículo vamos a repasar algunas de las más destacadas.
+
+## Enumeraciones
+
+Las enumeraciones son un tipo de dato que permite definir un conjunto finito y ordenado de valores constantes, que se pueden usar como alternativa a las constantes globales o a las clases con propiedades estáticas. Las enumeraciones facilitan la legibilidad y la seguridad del código, ya que evitan errores de escritura o de asignación de valores no válidos.
+
+Las enumeraciones se definen con la palabra reservada `enum`, seguida del nombre y del tipo de los valores (que puede ser `int` o `string`). Dentro de las llaves se especifican los valores posibles, separados por comas. Por ejemplo:
+
+```php
+enum Status: string
+{
+    case DRAFT = 'draft';
+    case PUBLISHED = 'published';
+    case ARCHIVED = 'archived';
+}
+```
+
+Para acceder a los valores de una enumeración se usa el operador `::`, como si fuera una clase. Por ejemplo:
+
+```php
+$status = Status::DRAFT;
+echo $status->value; // 'draft'
+echo $status->name; // 'DRAFT'
+```
+
+Las enumeraciones también pueden tener métodos, que se definen dentro de las llaves después de los valores. Por ejemplo:
+
+```php
+enum Status: string
+{
+    case DRAFT = 'draft';
+    case PUBLISHED = 'published';
+    case ARCHIVED = 'archived';
+
+    public function isEditable(): bool
+    {
+        return $this === Status::DRAFT;
+    }
+}
+```
+
+## Readonly properties
+
+Las propiedades de solo lectura son aquellas que solo se pueden asignar una vez, en el constructor de la clase o en la declaración de la propiedad. Esto evita que se modifiquen accidentalmente o intencionadamente después de su inicialización, lo que mejora la inmutabilidad y la consistencia de los objetos.
+
+Las propiedades de solo lectura se declaran con el modificador `readonly` antes del modificador de visibilidad (`public`, `protected` o `private`). Por ejemplo:
+
+```php
+class User
+{
+    public readonly int $id;
+    public readonly string $name;
+
+    public function __construct(int $id, string $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
+}
+```
+
+Si se intenta modificar una propiedad de solo lectura después de su asignación inicial, se produce un error fatal. Por ejemplo:
+
+```php
+$user = new User(1, 'Alice');
+$user->name = 'Bob'; // Fatal error: Uncaught Error: Cannot modify readonly property User::$name
+```
+
+## El operador match
+
+El operador `match` de **PHP 8.1** es una nueva característica que permite escribir expresiones condicionales de forma más compacta y legible que el `switch`. El operador `match` evalúa una expresión y compara su valor con una lista de opciones, devolviendo el valor asociado a la primera opción que coincida. A diferencia del `switch`, el operador `match` no requiere usar `break` para evitar la ejecución de las opciones siguientes, y soporta comparaciones estrictas y uniones de tipos.
+
+```php
+// Usando switch
+$color = 'red';
+switch ($color) {
+    case 'red':
+    case 'green':
+    case 'blue':
+        $rgb = true;
+        break;
+    default:
+        $rgb = false;
+}
+
+// Usando match
+$color = 'red';
+$rgb = match ($color) {
+    'red', 'green', 'blue' => true,
+    default => false,
+};
+```
+
+## Operador nullsafe
+
+El operador nullsafe de **PHP 8.1** es una nueva característica que permite acceder a propiedades o métodos de objetos que pueden ser nulos sin provocar un error. El operador nullsafe consiste en usar el símbolo `?->` en lugar de `->` para indicar que si el objeto es nulo, se devuelva nulo en lugar de lanzar una excepción. Esto evita tener que usar múltiples comprobaciones de nulidad o el operador de fusión null (`??`) para evitar errores.
+
+```php
+// Sin el operador nullsafe
+$user = getUserById($id);
+if ($user !== null) {
+    $address = $user->getAddress();
+    if ($address !== null) {
+        $country = $address->country;
+    }
+}
+
+// Con el operador nullsafe
+$user = getUserById($id);
+$country = $user?->getAddress()?->country;
+```
+
+## Final class constants
+
+Las constantes de clase final son aquellas que no se pueden sobrescribir en las clases hijas. Esto evita que se modifique el valor original de la constante, lo que puede causar inconsistencias o errores en el código.
+
+Las constantes de clase final se declaran con el modificador `final` antes del modificador `const`. Por ejemplo:
+
+```php
+class A
+{
+    final const FOO = 'foo';
+}
+
+class B extends A
+{
+    const FOO = 'bar'; // Fatal error: Cannot override final constant A::FOO
+}
+```
+
+En este ejemplo, la constante `FOO` de la clase `A` es final, por lo que no se puede sobrescribir en la clase `B`. Si se intenta hacerlo, se produce un error fatal.
+
+Las constantes de clase final pueden ser útiles para definir valores que no deben cambiar en las subclases, como por ejemplo identificadores únicos o configuraciones globales.
+
+## Otros cambios
+
+Además de las características mencionadas anteriormente, PHP 8.1 también incluye otros cambios menores o experimentales, como:
+
+- La sintaxis `new Foo[]` para crear arrays de objetos.
+- El modificador `never` para indicar que una función o método nunca retorna.
+- El atributo `#[Deprecated]` para marcar elementos obsoletos.
+- El operador `throw` para lanzar excepciones como expresiones.
+- El atributo `#[Pure]` para indicar que una función o método no tiene efectos secundarios.
+- El atributo `#[Immutable]` para indicar que una clase o propiedad es inmutable.
+
+Puedes consultar la lista completa de cambios en el [sitio oficial](https://www.php.net/releases/8.1/en.php) de PHP.
+
+## Conclusión
+
+**PHP 8.1** es una versión muy interesante y esperada por muchos desarrolladores, que trae consigo varias mejoras y novedades que harán la vida más fácil a los desarrolladores y a los usuarios. En este artículo hemos repasado algunas de las más destacadas, como las enumeraciones, las propiedades de solo lectura, las fibras, los tipos de intersección y las constantes de clase final.
+
+Esperamos que este artículo te haya resultado útil e interesante. Si te ha gustado, compártelo con tus amigos y déjanos un comentario con tu opinión o tus dudas. ¡Hasta la próxima!
