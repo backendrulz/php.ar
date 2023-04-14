@@ -27,6 +27,18 @@ const config: GatsbyConfig = {
       },
     },
     {
+      resolve: `gatsby-plugin-google-gtag`,
+      options: {
+        trackingIds: [
+          'G-HBRZNMGVF8', // Google Analytics / GA
+        ],
+        pluginConfig: {
+          // Avoids sending pageview hits from custom paths
+          exclude: ['/preview/**', '/do-not-track/me/too/'],
+        },
+      },
+    },
+    {
       resolve: `@lekoarts/gatsby-theme-minimal-blog`,
       // See the theme's README for all available options
       options: {
