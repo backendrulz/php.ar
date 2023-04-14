@@ -50,9 +50,11 @@ const Layout = ({ children, className = `` }: LayoutProps) => (
         strong: {
           color: get(t, `colors.strongColor`),
           position: `relative`,
+          display: `inline-block`,
           margin: `3px`,
+          padding: '1px',
         },
-        'strong::after': {
+        'strong::before': {
           backgroundColor: get(t, `colors.strongBackground`),
           content: '""',
           position: `absolute`,
