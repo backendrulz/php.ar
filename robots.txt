@@ -1,0 +1,3 @@
+User-agent: *
+
+sitemap: https://php.ar/sitemap-index.xml
