@@ -1,0 +1,160 @@
+---
+title: Instalación de Laravel 10 en Windows, Linux y macOS
+date: 2023-04-14
+description: Aprende cómo instalar Laravel 10 en Windows, Linux y macOS de forma fácil y rápida. Descubre las ventajas y características de Laravel 10, el mejor framework de PHP.
+banner: ./laravel-10-banner.png
+tags:
+  - laravel
+  - '10'
+  - instalación
+  - linux
+  - macos
+  - windows
+---
+
+![Laravel 10 banner](./laravel-10-banner.png 'Laravel 10 banner')
+
+Laravel es un framework de PHP que te permite crear aplicaciones web modernas, escalables y con alto rendimiento. En este artículo, te voy a enseñar cómo instalar Laravel 10 en Windows, Linux y macOS de forma fácil y rápida.
+
+## ¿Qué necesitas para instalar Laravel 10?
+
+Antes de instalar Laravel 10, necesitas tener instalados en tu máquina los siguientes requisitos:
+
+- PHP 8 o superior
+- Composer, el gestor de dependencias de PHP
+- Node.js y NPM, para compilar los assets de tu aplicación
+- Un servidor web como Apache o Nginx (opcional)
+
+Puedes verificar si tienes instalados estos requisitos ejecutando los siguientes comandos en tu terminal:
+
+```bash
+php -v
+composer -V
+node -v
+npm -v
+```
+
+Si alguno de estos comandos no te devuelve una versión válida, significa que tienes que instalar o actualizar el componente correspondiente.
+
+## ¿Cómo instalar Laravel 10 en Windows?
+
+Para instalar Laravel 10 en Windows, puedes seguir estos pasos:
+
+1. Descarga e instala Docker Desktop desde su página oficial: https://www.docker.com/products/docker-desktop
+2. Asegúrate de que tienes habilitado el Subsistema de Windows para Linux 2 (WSL2) siguiendo las instrucciones de este enlace: https://docs.microsoft.com/en-us/windows/wsl/install-win10
+3. Abre una terminal de WSL2 y ejecuta el siguiente comando para crear un nuevo proyecto de Laravel:
+
+```bash
+curl -s https://laravel.build/example-app | bash
+```
+
+Este comando creará una carpeta llamada `example-app` con la instalación básica de Laravel 10 y un entorno de desarrollo con Docker.
+
+4. Entra en la carpeta del proyecto y ejecuta el siguiente comando para iniciar el servidor web:
+
+```bash
+./vendor/bin/sail up
+```
+
+Este comando levantará los contenedores de Docker necesarios para tu aplicación, como el servidor web, la base de datos, el servidor Redis y el servidor Mailhog.
+
+5. Abre tu navegador y accede a la dirección http://localhost. Deberías ver la página de bienvenida de Laravel.
+
+## ¿Cómo instalar Laravel 10 en Linux?
+
+Para instalar Laravel 10 en Linux, puedes seguir estos pasos:
+
+1. Abre una terminal y ejecuta el siguiente comando para crear un nuevo proyecto de Laravel:
+
+```bash
+composer create-project laravel/laravel example-app
+```
+
+Este comando creará una carpeta llamada `example-app` con la instalación básica de Laravel 10.
+
+2. Entra en la carpeta del proyecto y ejecuta el siguiente comando para iniciar el servidor web:
+
+```bash
+php artisan serve
+```
+
+Este comando iniciará el servidor web integrado de PHP en el puerto 8000.
+
+3. Abre tu navegador y accede a la dirección http://localhost:8000. Deberías ver la página de bienvenida de Laravel.
+
+## ¿Cómo instalar Laravel 10 en macOS?
+
+Para instalar Laravel 10 en macOS, puedes seguir estos pasos:
+
+1. Instala PHP y Composer usando Homebrew, el gestor de paquetes de macOS. Para ello, abre una terminal y ejecuta los siguientes comandos:
+
+```bash
+brew update
+brew install php composer
+```
+
+2. Instala Node.js y NPM usando Homebrew también. Para ello, ejecuta el siguiente comando:
+
+```bash
+brew install node
+```
+
+3. Crea un nuevo proyecto de Laravel usando el instalador global de Laravel. Para ello, ejecuta los siguientes comandos:
+
+```bash
+composer global require laravel/installer
+laravel new example-app
+```
+
+Estos comandos crearán una carpeta llamada `example-app` con la instalación básica de Laravel 10.
+
+4. Entra en la carpeta del proyecto y ejecuta el siguiente comando para iniciar el servidor web:
+
+```bash
+php artisan serve
+```
+
+Este comando iniciará el servidor web integrado de PHP en el puerto 8000.
+
+5. Abre tu navegador y accede a la dirección http://localhost:8000. Deberías ver la página de inicio.
+
+## ¿Qué ventajas tiene usar Laravel 10 frente a otras versiones o frameworks?
+
+Laravel 10 es la última versión del popular framework de PHP. Esta versión trae varias mejoras y novedades que hacen que Laravel sea más potente, flexible y fácil de usar. Algunas de estas ventajas son:
+
+- **Soporte para PHP 8** y sus nuevas características, como los atributos, las uniones de tipos, el operador nullsafe y las expresiones match.
+- **Mejoras en el sistema de rutas**, como la posibilidad de definir rutas con múltiples verbos HTTP, agrupar rutas por dominio o usar closures en los middleware.
+- **Mejoras en el sistema de validación**, como la posibilidad de usar reglas personalizadas o condicionales, validar arrays anidados o usar mensajes personalizados por campo.
+- **Mejoras en el sistema de autenticación**, como la posibilidad de usar múltiples guardias o proveedores, definir políticas personalizadas o usar tokens Sanctum para autenticar aplicaciones SPA o API.
+- **Mejoras en el sistema de cacheo**, como la posibilidad de usar múltiples almacenes o drivers, definir etiquetas o grupos para invalidar el cache o usar eventos para escuchar los cambios en el cache.
+- **Mejoras en el sistema de eventos**, como la posibilidad de usar listeners sincrónicos o asíncronos, definir prioridades o condiciones para los listeners o usar eventos falsos para pruebas.
+- **Mejoras en el sistema de colas**, como la posibilidad de usar múltiples conexiones o drivers, definir reintentos o tiempos de espera para los trabajos o usar eventos para monitorear las colas.
+- **Mejoras en el sistema de testing**, como la posibilidad de usar Pest como alternativa a PHPUnit, definir factories personalizadas o estados para los modelos o usar helpers para simular acciones del usuario.
+
+## **Nuevas características**
+
+- **Jetstream**, un paquete que te permite crear aplicaciones con autenticación, registro y gestión de usuarios.
+- **Fortify**, un paquete que te permite personalizar la lógica de autenticación y registro.
+- **Breeze**, un paquete que te ofrece un esqueleto básico para tus aplicaciones.
+- **Sail**, un paquete que te permite usar **Docker** para tu entorno de desarrollo.
+- **Octane**, un paquete que te permite mejorar el rendimiento de tu aplicación usando **Swoole** o **RoadRunner**.
+- **Socialite**, un paquete que te permite integrar tu aplicación con servicios externos como **Facebook** o **Google**.
+- **Cashier**, un paquete que te permite integrar tu aplicación con servicios de pago como **Stripe** o **Paddle**.
+- **Scout**, un paquete que te permite integrar tu aplicación con motores de búsqueda como **Algolia** o **MeiliSearch**.
+- **Telescope**, un paquete que te permite monitorear y depurar tu aplicación.
+- **Horizon**, un paquete que te permite gestionar y supervisar tus colas.
+- **Dusk**, un paquete que te permite hacer pruebas de navegador automatizadas.
+- **Sanctum**, un paquete que te permite autenticar aplicaciones **SPA** o **API** usando tokens.
+- **Passport**, un paquete que te permite implementar **OAuth2** en tu aplicación.
+- **Nova**, un paquete que te ofrece un panel de administración elegante y potente para tu aplicación.
+- **Spark**, un paquete que te ofrece una solución completa para crear aplicaciones **SaaS** con facturación y suscripciones.
+- **Livewire**, un paquete que te permite crear interfaces dinámicas usando solo PHP.
+- **Inertia**, un paquete que te permite crear aplicaciones **SPA** usando **Vue**, **React** o **Svelte** sin usar una API.
+
+Como puedes ver, Laravel 10 tiene muchas ventajas y características que lo hacen uno de los mejores frameworks de PHP del mercado. Si quieres aprender más sobre Laravel 10 y cómo usarlo para crear aplicaciones web increíbles, te recomiendo que visites su página oficial: https://laravel.com
+
+## Conclusión
+
+En este artículo, te he mostrado cómo **instalar Laravel 10** en **Windows**, **Linux** y **macOS** de forma fácil y rápida. También te he explicado algunas de las ventajas y características que tiene **Laravel 10** frente a otras versiones o frameworks. Espero que este artículo te haya sido útil y que te animes a probar Laravel 10 en tus próximos proyectos.
+
+Si te ha gustado este artículo, por favor compártelo con tus amigos y déjame un comentario con tu opinión. También puedes suscribirte a mi blog para recibir más artículos sobre desarrollo web con PHP y Laravel. Muchas gracias por leerme y hasta la próxima. ¡Saludos! 🙌
