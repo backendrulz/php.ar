@@ -37,7 +37,7 @@ const Homepage = ({ posts }: MBHomepageProps) => {
       <h1 sx={visuallyHidden}>{siteTitle}</h1>
       <section
         sx={{
-          mb: [3, 4, 5],
+          mb: [4, 5, 5],
           p: { fontSize: [1, 2, 3], mt: 2 },
           variant: `section_hero`,
         }}
@@ -46,7 +46,7 @@ const Homepage = ({ posts }: MBHomepageProps) => {
       </section>
       <Title text='Últimas publicaciones'>
         <Link to={replaceSlashes(`/${basePath}/${blogPath}`)}>
-          Todas las publicaciones
+          Ver todas las publicaciones
         </Link>
       </Title>
       <Listing posts={posts} showTags={false} />
