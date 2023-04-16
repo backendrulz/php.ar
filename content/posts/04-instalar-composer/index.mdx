@@ -1,0 +1,135 @@
+---
+title: Cómo instalar composer en Windows, Linux y macOS
+date: 2023-04-16
+description: Aprende qué es Composer, cómo instalarlo en Windows, Linux y macOS, y cómo usarlo para crear un proyecto básico en PHP. Domina la gestión de dependencias y aprovecha el ecosistema de paquetes PHP.
+banner: ./composer-banner.png
+tags:
+  - composer
+  - instalación
+  - linux
+  - macos
+  - windows
+  - guzzle
+  - ejemplo
+  - proyecto
+---
+
+![Composer 10 banner](./composer-banner.png 'Composer 10 banner')
+
+# ¿Qué es Composer y cómo instalarlo en diferentes sistemas operativos?
+
+**Composer** es una herramienta de gestión de dependencias para **PHP** que te permite declarar las bibliotecas que necesitas para tu proyecto y las instala por ti. Con Composer puedes aprovechar el gran ecosistema de paquetes **PHP** disponibles en **Packagist**, su repositorio oficial.
+
+En este post te voy a mostrar cómo **instalar Composer en Windows, Linux y macOS**, y cómo usarlo para crear un proyecto básico.
+
+## Instalación de Composer en Windows
+
+Para instalar **Composer en Windows**, lo más fácil es usar el instalador ejecutable que puedes descargar desde https://getcomposer.org/Composer-Setup.exe. Este instalador verifica los requisitos previos, como la versión de **PHP** y la extensión **openssl**, y configura la variable de entorno `PATH` para que puedas ejecutar **Composer** desde cualquier directorio.
+
+Una vez descargado el instalador, haz doble clic en él y sigue las instrucciones en pantalla.
+Al finalizar, abre una ventana de línea de comandos y ejecuta el siguiente comando para verificar que **Composer** se ha instalado correctamente:
+
+```shell
+composer --version
+```
+
+Deberías ver algo como esto:
+
+```shell
+Composer version 2.5.5 2023-03-21 11:50:05
+```
+
+## Instalación de Composer en Linux y macOS
+
+Para **instalar Composer en Linux o macOS**, puedes usar el siguiente comando en una terminal:
+
+```shell
+curl -sS https://getcomposer.org/installer | php
+```
+
+Este comando descarga el script de instalación de **Composer** y lo ejecuta con **PHP**. El script verifica los requisitos previos y crea un archivo llamado `composer.phar` en el directorio actual. Este archivo es el binario de **Composer** que puedes mover a cualquier lugar de tu sistema.
+
+Para hacerlo más cómodo, puedes mover el archivo `composer.phar` a un directorio que esté en tu variable de entorno `PATH`, como `/usr/local/bin`, y renombrarlo a `composer`. Así podrás ejecutar **Composer** desde cualquier directorio. Para hacer esto, usa el siguiente comando:
+
+```shell
+sudo mv composer.phar /usr/local/bin/composer
+```
+
+Luego, verifica que Composer se ha instalado correctamente con el siguiente comando:
+
+```shell
+composer --version
+```
+
+Deberías ver algo como esto:
+
+```shell
+Composer version 2.5.5 2023-03-21 11:50:05
+```
+
+## Uso básico de Composer
+
+Ahora que tienes **Composer** instalado, puedes usarlo para crear un proyecto **PHP** con algunas dependencias. Por ejemplo, vamos a crear un proyecto que use la biblioteca **Guzzle** para hacer peticiones **HTTP**.
+
+Para crear el proyecto, usa el siguiente comando:
+
+```shell
+composer create-project --prefer-dist guzzle-test
+```
+
+Este comando crea un directorio llamado `guzzle-test` con un archivo `composer.json` que contiene la información del proyecto y las dependencias. También ejecuta el comando `composer install` para descargar e instalar las dependencias en el directorio `vendor`.
+
+El archivo `composer.json` tiene este aspecto:
+
+```json
+{
+  "name": "guzzle-test",
+  "require": {
+    "guzzlehttp/guzzle": "^7.3"
+  }
+}
+```
+
+Aquí puedes ver que el proyecto requiere la versión **7.3** o superior de **Guzzle**.
+
+Para usar **Guzzle** en tu código **PHP**, solo tienes que incluir el archivo `vendor/autoload.php` que genera **Composer** para cargar automáticamente las clases que necesites. Por ejemplo, puedes crear un archivo `index.php` con el siguiente código:
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+$response = $client->request('GET', 'https://jsonplaceholder.typicode.com/posts');
+
+echo $response->getBody();
+```
+
+Este código crea un cliente **Guzzle** y hace una petición **GET** a una **API** ficticia que devuelve una lista de posts en formato **JSON**. Luego imprime el cuerpo de la respuesta.
+
+Si ejecutas este código con el siguiente comando:
+
+```shell
+php index.php
+```
+
+Deberías ver algo como esto:
+
+```json
+[
+  {
+    "userId": 1,
+    "id": 1,
+    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+    "body": "quia et suscipit\nsuscipit recusandae consequuntur ..."
+  }
+  //....
+]
+```
+
+¡Gracias por llegar hasta el final!
+
+Nos vemos en un próximo post 😊
