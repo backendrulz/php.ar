@@ -17,7 +17,7 @@ const config: GatsbyConfig = {
     siteLanguage: `es`,
     author: `@backendrulz`,
   },
-  trailingSlash: `never`,
+  trailingSlash: `always`,
   plugins: [
     {
       resolve: `gatsby-plugin-disqus`,
