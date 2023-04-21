@@ -1,0 +1,164 @@
+---
+title: Cómo empezar con Livewire en Laravel 10
+date: 2023-04-21
+description: Aprende a instalar y usar Livewire en un proyecto de Laravel 10. Crea componentes dinámicos y reactivos con Blade y Vue, y renderiza el Javascript desde el lado del servidor.
+banner: ./livewire-banner.png
+tags:
+  - livewire
+  - instalación
+  - framework
+  - componentes
+  - reactividad
+  - laravel
+  - ejemplo
+---
+
+![Livewire 10 banner](./livewire-banner.png 'Livewire 10 banner')
+**Livewire** es un **framework** para **Laravel** que te permite crear interfaces dinámicas y reactivas sin salir de la comodidad de Laravel. Con Livewire, puedes usar **Blade** y **Vue** juntos, y renderizar el **Javascript** desde el lado del servidor. En este post, te voy a mostrar **cómo instalar y usar Livewire** en un proyecto de Laravel 10.
+
+## Instalar Livewire
+
+Para instalar Livewire, necesitas tener [Composer](/como-instalar-composer-en-windows-linux-y-mac-os/) actualizado y ejecutar el siguiente comando en tu proyecto de Laravel:
+
+```bash
+composer require livewire/livewire
+```
+
+Esto instalará la versión más reciente de Livewire, que en el momento de escribir este artículo es la **2.x**.
+
+Después de instalar Livewire, tienes que agregar dos directivas de Blade en tu layout principal, que se suele llamar `layouts/app.blade.php`. Estas directivas son:
+
+- `@livewireStyles`: esta directiva sirve para que se escriban los estilos CSS necesarios para que Livewire funcione. Debemos colocarla en el `<head>` del documento.
+- `@livewireScripts`: esta directiva la usamos para mostrar los scripts de Javascript necesarios para Livewire. La colocaremos antes del cierre del `<body>` del documento.
+
+El layout podría quedar más o menos así:
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@yield ('title')</title>
+    @livewireStyles
+  </head>
+  <body>
+    <div class="container">@yield ('content')</div>
+    @livewireScripts
+  </body>
+</html>
+```
+
+## Crear un componente Livewire
+
+Un componente Livewire es una clase **PHP** que se comunica con una vista Blade. Los componentes Livewire tienen un estado interno y pueden reaccionar a eventos del usuario o del servidor.
+
+Para crear un componente Livewire, puedes usar el siguiente comando:
+
+```bash
+php artisan make:livewire nombre-del-componente
+```
+
+Esto creará dos archivos: uno en `app/Http/Livewire` con la clase PHP del componente, y otro en `resources/views/livewire` con la vista Blade del componente.
+
+Por ejemplo, si quieres crear un componente llamado `counter`, puedes ejecutar:
+
+```bash
+php artisan make:livewire counter
+```
+
+Esto creará los archivos `app/Http/Livewire/Counter.php` y `resources/views/livewire/counter.blade.php`.
+
+El archivo PHP tendrá una estructura como esta:
+
+```php
+<?php
+
+namespace App\Http\Livewire;
+
+use Livewire\Component;
+
+class Counter extends Component
+{
+    public function render()
+    {
+        return view('livewire.counter');
+    }
+}
+```
+
+El archivo Blade tendrá una estructura como esta:
+
+```html
+<div>
+  <!-- The only way to do great work is to love what you do. - Steve Jobs -->
+</div>
+```
+
+## Usar un componente Livewire
+
+Para usar un componente Livewire en una vista Blade, solo tienes que usar la directiva `@livewire` y pasarle el nombre del componente como argumento.
+
+Por ejemplo, si quieres usar el componente `counter` que hemos creado antes en la vista `welcome.blade.php`, puedes hacer algo así:
+
+```php
+@extends('layouts.app')
+    @section('title', 'Bienvenido')
+    @section('content')
+        <h1>Bienvenido a mi sitio web</h1>
+        <p>Aquí puedes ver un ejemplo de un componente Livewire:</p>
+        @livewire('counter')
+    @endsection
+```
+
+Esto renderizará el contenido del archivo `resources/views/livewire/counter.blade.php` en la vista `welcome.blade.php`.
+
+## Agregar funcionalidad al componente Livewire
+
+Ahora que ya sabes cómo crear y usar un componente Livewire, vamos a ver cómo agregarle funcionalidad y hacerlo interactivo.
+
+Para este ejemplo, vamos a hacer que el componente `counter` tenga un botón que incremente un contador cada vez que se presione.
+
+Para lograr esto, vamos a modificar los archivos PHP y Blade del componente de la siguiente manera:
+
+En el archivo PHP, vamos a agregar una propiedad pública llamada `$count` que tendrá el valor inicial del contador, y un método público llamado `increment` que incrementará el valor de `$count` en uno cada vez que se llame. El archivo PHP quedaría así:
+
+```php
+<?php
+
+namespace App\Http\Livewire;
+
+use Livewire\Component;
+
+class Counter extends Component
+{
+    public $count = 0;
+
+    public function increment()
+    {
+        $this->count++;
+    }
+
+    public function render()
+    {
+        return view('livewire.counter');
+    }
+}
+```
+
+En el archivo Blade, vamos a mostrar el valor de `$count` y agregar un botón que llame al método `increment` cuando se haga clic en él. El archivo Blade quedaría así:
+
+```html
+<div>
+  <h3>Contador: {{ $count }}</h3>
+  <button wire:click="increment">Incrementar</button>
+</div>
+```
+
+Con esto, ya tenemos un componente Livewire funcional y dinámico. Si recargas la página donde lo usas, verás que el contador se actualiza cada vez que presionas el botón.
+
+## Conclusión
+
+En este post, hemos visto cómo instalar y usar Livewire en un proyecto de **Laravel 10**. Hemos aprendido a crear y usar componentes Livewire, y a agregarles funcionalidad e interactividad. Livewire es un framework muy potente y fácil de usar, que nos permite crear interfaces dinámicas y reactivas sin salir de la comodidad de Laravel. Si quieres saber más sobre Livewire, te recomiendo que visites su documentación oficial: https://laravel-livewire.com/docs/2.x/quickstart
+
+Espero que te haya gustado este post y que te haya servido para aprender algo nuevo. Si tienes alguna duda o comentario, puedes dejarlo abajo. ¡Gracias por leer!
