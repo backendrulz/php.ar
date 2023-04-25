@@ -1,0 +1,192 @@
+---
+title: 'Usar Pest en Laravel 10: Una guía para principiantes'
+date: 2023-04-25
+description: Aprende cómo usar Pest en Laravel 10, un framework de pruebas elegante y expresivo que se integra perfectamente con el popular framework de desarrollo web basado en PHP.
+banner: ./pest-banner.png
+tags:
+  - pest
+  - instalación
+  - framework
+  - testing
+  - pruebas
+  - phpunit
+  - laravel
+  - guia
+---
+
+![Pest banner](./pest-banner.png 'Pest banner')
+
+**Pest** es un **framework de pruebas** para PHP que ofrece una sintaxis elegante y expresiva para escribir **pruebas unitarias** y de **integración**. Pest se integra perfectamente con Laravel, el popular framework de desarrollo web basado en PHP, y ofrece varias ventajas sobre otros frameworks de pruebas como **PHPUnit** o **Codeception**.
+
+En esta publicación de blog, te enseñaré cómo usar Pest en Laravel 10, desde la instalación y configuración hasta algunos ejemplos de uso. Al final de este artículo, podrás escribir pruebas más legibles, concisas y divertidas con Pest y Laravel.
+
+## ¿Qué es Pest y por qué usarlo?
+
+Pest es un framework de pruebas creado por Nuno Maduro, un desarrollador portugués que trabaja en Laravel.
+Pest se inspira en otros frameworks de pruebas como **Jest** (para **JavaScript**) o **RSpec** (para **Ruby**), y ofrece una sintaxis similar a la de estos.
+
+Pest se basa en **PHPUnit**, el framework de pruebas más usado en PHP, pero lo mejora con las siguientes características:
+
+- Una sintaxis fluida y expresiva que permite escribir pruebas con menos código y más claridad.
+- Un sistema de plugins que permite extender la funcionalidad de Pest con características adicionales, como soporte para snapshots, mocks, paralelización, cobertura de código, etc.
+- Una integración nativa con Laravel que permite usar las funciones y helpers del framework sin necesidad de configurar nada adicional.
+- Un reporte de errores más amigable y detallado que el de PHPUnit, que facilita la depuración y el análisis de las pruebas.
+
+## Cómo instalar Pest en Laravel 10
+
+Para instalar Pest en Laravel 10, solo necesitas ejecutar el siguiente comando en la terminal:
+
+```bash
+composer require pestphp/pest --dev
+```
+
+Este comando instalará Pest como una dependencia de desarrollo en tu proyecto Laravel. También creará un archivo `pest.php` en la carpeta `tests`, donde podrás configurar las opciones de Pest.
+
+Además, si quieres usar los plugins de Pest, puedes instalarlos con el comando `pest:install`, seguido del nombre del plugin. Por ejemplo, para instalar el plugin de Laravel, puedes ejecutar:
+
+```bash
+php artisan pest:install laravel
+```
+
+Este comando instalará el plugin y creará un archivo `Pest.php` en la carpeta `tests`, donde podrás registrar los helpers y funciones globales de Laravel para usarlos en tus pruebas.
+
+## Cómo escribir pruebas con Pest
+
+Para escribir pruebas con Pest, puedes usar la función `test`, que recibe dos argumentos: el nombre de la prueba y una función anónima que contiene las afirmaciones o assertions. Por ejemplo:
+
+```php
+test('la suma de dos números es igual a su resultado', function () {
+    expect(1 + 2)->toBe(3);
+});
+```
+
+En este ejemplo, usamos la función `expect` para crear una expectativa sobre el valor que queremos probar. Luego, usamos el método `toBe` para comparar ese valor con el resultado esperado. Si la comparación es verdadera, la prueba pasa; si no, falla.
+
+Pest ofrece varios métodos para hacer diferentes tipos de comparaciones, como `toEqual`, `toBeTrue`, `toBeFalse`, `toContain`, `toHaveKey`, etc. Puedes consultar la documentación oficial de Pest para ver todos los métodos disponibles.
+
+Además, puedes agrupar varias pruebas relacionadas en un grupo o suite usando la función `it`. Por ejemplo:
+
+```php
+it('suma dos números', function () {
+    expect(1 + 2)->toBe(3);
+});
+
+it('resta dos números', function () {
+    expect(2 - 1)->toBe(1);
+});
+```
+
+En este caso, las dos pruebas pertenecen al mismo grupo y se ejecutan juntas. Puedes usar tantos grupos como quieras para organizar tus pruebas.
+
+## Cómo escribir pruebas para Laravel con Pest
+
+Pest se integra perfectamente con Laravel y te permite usar las funciones y helpers del framework en tus pruebas. Por ejemplo, puedes usar la función `get` para hacer una petición HTTP a una ruta de tu aplicación y luego usar los métodos `assertOk`, `assertStatus`, `assertJson`, etc. para verificar la respuesta de la ruta. Por ejemplo:
+
+```php
+test('la ruta / devuelve una vista de bienvenida', function () {
+    $response = get('/');
+
+    $response->assertOk();
+    $response->assertViewIs('welcome');
+});
+```
+
+En este ejemplo, hacemos una petición GET a la ruta `/` y luego verificamos que la respuesta sea exitosa y que devuelva la vista `welcome`.
+
+También puedes usar la función `post` para hacer una petición POST a una ruta y enviar datos. Por ejemplo:
+
+```php
+test('la ruta /login autentica a un usuario', function () {
+    $user = User::factory()->create();
+
+    $response = post('/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect('/home');
+    expect(auth()->user())->toBe($user);
+});
+```
+
+En este ejemplo, creamos un usuario con el helper `User::factory()` y luego hacemos una petición POST a la ruta `/login` con sus credenciales. Luego, verificamos que la respuesta sea una redirección a la ruta `/home` y que el usuario esté autenticado.
+
+Pest también te permite usar los helpers `artisan`, `database`, `event`, `mail`, `queue`, etc. para interactuar con los componentes de Laravel en tus pruebas. Por ejemplo:
+
+```php
+test('la ruta /register crea un nuevo usuario', function () {
+    $response = post('/register', [
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    $response->assertRedirect('/home');
+    expect(User::count())->toBe(1);
+    expect(User::first()->name)->toBe('John Doe');
+    expect(User::first()->email)->toBe('john@example.com');
+    expect(User::first()->email_verified_at)->not()->toBeNull();
+    mail()->assertSent(VerifyEmail::class);
+});
+```
+
+En este ejemplo, hacemos una petición POST a la ruta `/register` con los datos de un nuevo usuario y luego verificamos que se haya creado el usuario en la base de datos, que tenga sus datos correctos, que haya verificado su email y que se haya enviado un correo de verificación.
+
+## Cómo usar plugins de Pest
+
+Pest tiene un sistema de plugins que te permite extender su funcionalidad con características adicionales. Algunos de los plugins más populares son:
+
+- **Pest Plugin Laravel**: Te permite usar las funciones y helpers de Laravel en tus pruebas.
+- **Pest Plugin Livewire**: Te permite escribir pruebas para tus componentes Livewire.
+- **Pest Plugin Parallel**: Te permite ejecutar tus pruebas en paralelo para reducir el tiempo de ejecución.
+- **Pest Plugin Coverage**: Te permite generar un reporte de cobertura de código para tus pruebas.
+- **Pest Plugin Expectations**: Te permite usar más métodos de expectativa en tus pruebas.
+- **Pest Plugin Faker**: Te permite usar el generador de datos falsos Faker en tus pruebas.
+- **Pest Plugin Init**: Te permite inicializar un proyecto Pest desde cero.
+- **Pest Plugin Mockery**: Te permite usar el framework de mocking Mockery en tus pruebas.
+- **Pest Plugin Snapshot**: Te permite usar snapshots para comparar el resultado de tus pruebas con una versión anterior.
+
+Para usar un plugin de Pest, solo tienes que instalarlo con Composer y luego ejecutar el comando `pest:install` seguido del nombre del plugin. Por ejemplo, para instalar el plugin de Livewire, puedes ejecutar:
+
+```bash
+composer require pestphp/pest-plugin-livewire --dev
+php artisan pest:install livewire
+```
+
+Este comando instalará el plugin y creará un archivo `Livewire.php` en la carpeta `tests`, donde podrás registrar los helpers y funciones globales de Livewire para usarlos en tus pruebas.
+
+## Cómo ejecutar y depurar pruebas con Pest
+
+Para ejecutar tus pruebas con Pest, solo tienes que ejecutar el comando `pest` en la terminal. Este comando ejecutará todas las pruebas que encuentre en la carpeta `tests`.
+
+Si quieres ejecutar solo una prueba o un grupo de pruebas, puedes pasar el nombre o el archivo como argumento. Por ejemplo:
+
+```bash
+pest tests/Feature/LoginTest.php
+pest --group=auth
+```
+
+Estos comandos ejecutarán solo la prueba `LoginTest.php` o las pruebas que pertenezcan al grupo `auth`.
+
+Pest también te ofrece varias opciones para depurar y analizar tus pruebas. Por ejemplo:
+
+- Puedes usar la opción `--coverage` para generar un reporte de cobertura de código para tus pruebas. Necesitas tener instalado el plugin de coverage para usar esta opción.
+- Puedes usar la opción `--watch` para ejecutar tus pruebas cada vez que cambies un archivo de tu proyecto. Necesitas tener instalado el plugin de watch para usar esta opción.
+- Puedes usar la opción `--filter` para ejecutar solo las pruebas que coincidan con un patrón. Por ejemplo: `pest --filter=suma`.
+- Puedes usar la opción `--stop-on-failure` para detener la ejecución de las pruebas cuando una falle.
+- Puedes usar la opción `--verbose` para mostrar más información sobre las pruebas y los errores.
+
+Puedes consultar la documentación oficial de Pest para ver todas las opciones disponibles.
+
+## Conclusión
+
+En este artículo, te he mostrado cómo **usar Pest en Laravel 10**, desde la instalación y configuración hasta algunos ejemplos de uso. Espero que te haya gustado y que te animes a probar este framework de pruebas tan elegante y expresivo.
+
+Pest te ofrece una sintaxis fluida y concisa para escribir pruebas unitarias y de integración, una integración nativa con Laravel y sus componentes, un sistema de plugins para extender su funcionalidad y un reporte de errores más amigable y detallado.
+
+Si quieres aprender más sobre Pest, te recomiendo que visites su sitio web oficial, donde encontrarás una guía completa, una referencia de los métodos disponibles y una lista de los plugins existentes.
+
+También puedes seguir a Nuno Maduro en Twitter (@enunomaduro), donde comparte consejos y novedades sobre Pest y Laravel.
+
+Gracias por leer este artículo y ¡Hasta la próxima!.
