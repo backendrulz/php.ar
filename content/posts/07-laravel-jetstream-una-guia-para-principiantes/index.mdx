@@ -1,0 +1,112 @@
+---
+title: 'Laravel Jetstream: una guía para principiantes'
+date: 2023-05-24
+description: Aprende qué es Laravel Jetstream, cómo instalarlo y cómo usarlo en este artículo educacional para principiantes. Descubre cómo crear aplicaciones web con manejo de usuarios, verificación de correo electrónico, login con redes sociales y panel de administración usando Livewire o Inertia.
+banner: ./jetstream-banner.png
+tags:
+  - laravel
+  - jetstream
+  - login
+  - registro
+  - validacion
+  - administracion
+  - perfil
+  - livewire
+  - inertia
+  - blade
+---
+
+![Pest banner](./jetstream-banner.png 'Laravel Jetstream banner')
+
+**Laravel** es uno de los frameworks más populares y poderosos para el desarrollo web en **PHP**. Con Laravel, puedes crear aplicaciones web robustas y escalables con facilidad y rapidez. Pero, ¿qué pasa si quieres añadir funcionalidades comunes como el manejo de usuarios, la verificación de correo electrónico, el login con redes sociales y el panel de administración? ¿Tienes que programar todo desde cero?
+
+La respuesta es no. Para eso existe **Laravel Jetstream**, un paquete oficial de **Laravel** que te ofrece todo lo que necesitas para empezar con tu proyecto web. En este artículo, te voy a explicar qué es, cómo instalarlo y cómo usarlo. Al final, tendrás una aplicación web funcional con las siguientes características:
+
+- Registro y login de usuarios con validación y verificación de correo electrónico.
+- Login con redes sociales como **Facebook**, **Google** y **Twitter**.
+- Panel de administración con opciones para cambiar la contraseña, el nombre, el correo electrónico y la foto de perfil.
+- Soporte para equipos, que te permite crear y gestionar grupos de usuarios con diferentes roles y permisos.
+- Soporte para **Livewire** o **Inertia**, que son dos librerías que te permiten crear interfaces de usuario dinámicas y reactivas sin usar JavaScript.
+
+¿Te interesa? Entonces sigue leyendo y aprende cómo usar Laravel Jetstream en tu próximo proyecto web.
+
+## ¿Qué es Laravel Jetstream?
+
+Laravel Jetstream es un paquete oficial de Laravel que te proporciona un punto de partida para tus aplicaciones web. Con Laravel Jetstream, no tienes que preocuparte por crear las **vistas**, los **controladores**, los **modelos** y las **migraciones** para el **manejo de usuarios**, la **verificación de correo electrónico**, el **login con redes sociales** y el **panel de administración**. Todo eso ya viene incluido y listo para usar.
+
+También te ofrece dos opciones para crear las interfaces de usuario de tu aplicación: Livewire o Inertia. Livewire es una librería que te permite escribir código PHP que se comporta como si fuera **JavaScript**. Con Livewire, puedes crear componentes interactivos que se actualizan sin recargar la página. Inertia es una librería que te permite usar cualquier framework de JavaScript (como **Vue** o **React**) dentro de tu aplicación Laravel. Con Inertia, puedes aprovechar las ventajas de los componentes de JavaScript sin perder la simplicidad de Laravel.
+
+Es compatible con Laravel 8 o superior, así que asegúrate de tener la última versión del framework antes de continuar.
+
+## ¿Cómo instalar Laravel Jetstream?
+
+Para instalarlo, lo primero que tienes que hacer es crear un nuevo proyecto Laravel usando el comando:
+
+```bash
+laravel new nombre-de-tu-proyecto
+```
+
+Luego, entra en la carpeta del proyecto y ejecuta el siguiente comando para instalar Laravel Jetstream:
+
+```bash
+composer require laravel/jetstream
+```
+
+Después, tienes que elegir si quieres usar Livewire o Inertia para las interfaces de usuario. Dependiendo de tu elección, ejecuta uno de los siguientes comandos:
+
+```bash
+# Para usar Livewire
+php artisan jetstream:install livewire
+
+# Para usar Inertia
+php artisan jetstream:install inertia
+
+# Para usar Blade
+php artisan jetstream:install
+```
+
+Esto creará los archivos necesarios para usar Laravel Jetstream en tu proyecto. Además, si eliges usar Inertia, tendrás que instalar las dependencias de Node.js con el comando:
+
+```bash
+npm install && npm run dev
+```
+
+Finalmente, tienes que ejecutar las migraciones para crear las tablas necesarias en la base de datos. Para ello, ejecuta el comando:
+
+```bash
+php artisan migrate
+```
+
+Y listo. Ya tienes instalado Jetstream en tu proyecto.
+
+## ¿Cómo usar Laravel Jetstream?
+
+Para usar Laravel Jetstream, lo único que tienes que hacer es acceder a tu aplicación web desde el navegador. Verás que ya tienes una página de inicio con un menú superior que te permite registrarte o iniciar sesión.
+
+Si te registras, tendrás que introducir tu nombre, tu correo electrónico y tu contraseña. Además, tendrás que verificar tu correo electrónico haciendo clic en el enlace que recibirás en tu bandeja de entrada.
+
+Una vez que hayas iniciado sesión, podrás acceder al panel de administración desde el menú superior derecho. Allí podrás cambiar tu contraseña, tu nombre, tu correo electrónico y tu foto de perfil.
+
+También podrás crear y gestionar equipos desde el menú lateral izquierdo. Los equipos son grupos de usuarios que pueden tener diferentes roles y permisos dentro de la aplicación. Por ejemplo, puedes crear un equipo llamado "Administradores" y asignarle el rol de "admin" a sus miembros. Así podrás restringir el acceso a ciertas partes de la aplicación solo a los usuarios con ese rol.
+
+Además, podrás iniciar sesión con redes sociales como Facebook, Google y Twitter desde la página de login. Para ello, tendrás que configurar las credenciales de cada proveedor en el archivo `.env` de tu proyecto. Puedes encontrar más información sobre cómo hacerlo en la documentación oficial de **Laravel Socialite**.
+
+## ¿Qué más puedes hacer con Laravel Jetstream?
+
+Es un paquete muy completo y útil para empezar con tus proyectos web. Sin embargo, no tiene por qué ser el final. Puedes personalizar y ampliar las funcionalidades según tus necesidades.
+
+Por ejemplo, puedes modificar las vistas, los controladores y los modelos que vienen incluidos en el paquete para adaptarlos a tu diseño y lógica. También puedes agregar nuevas características como la autenticación de dos factores, el borrado de cuentas o la gestión de suscripciones.
+
+Además, puedes aprovechar las ventajas de Livewire o Inertia para crear interfaces de usuario más dinámicas y reactivas. Por ejemplo, puedes usar **Livewire** para crear un sistema de comentarios en tiempo real o un chat entre usuarios. O puedes usar **Inertia** para integrar componentes de **Vue** o **React** en tu aplicación.
+
+En definitiva, te ofrece un punto de partida sólido y flexible para tus aplicaciones web. Te ahorra tiempo y trabajo al proporcionarte funcionalidades comunes como el manejo de usuarios, la verificación de correo electrónico, el login con redes sociales y el panel de administración. Y te permite elegir entre Livewire o Inertia para crear interfaces de usuario modernas y atractivas.
+
+## Conclusión
+
+En este artículo te he explicado qué es Laravel Jetstream, cómo instalarlo y cómo usarlo. Espero que te haya servido para conocer este paquete oficial de Laravel y sus beneficios.
+
+Si quieres aprender más, te recomiendo que visites la documentación oficial del paquete donde encontrarás más detalles y ejemplos sobre su uso.
+
+También te invito a que pruebes Laravel Jetstream por ti mismo y me cuentes qué te ha parecido en los comentarios.
+
+Gracias por leer hasta aquí y hasta la próxima.
