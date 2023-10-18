@@ -1,0 +1,96 @@
+---
+title: 'Laravel API Toolkit'
+date: 2023-10-16
+description: Aprende a usar Laravel API Toolkit con esta guía amigable para principiantes. Cubrimos la configuración inicial, la creación de modelos, migraciones y la creación de recursos.
+tags:
+  - laravel
+  - api
+  - api rest
+  - toolkit
+---
+
+## ¿Qué es Laravel API Toolkit?
+
+**Laravel API Toolkit** es un conjunto de herramientas que te ayudará a supercargar tu desarrollo de API con respuestas estandarizadas, paginación dinámica y mucho más. Actualmente, soporta las siguientes características:
+
+- Soporte de esquemas
+- Ayudantes de paginación
+- Comando generador de API
+- Filtrado de API
+- Acciones
+- Ayudantes de medios
+
+## ¿Cómo usar Laravel API Toolkit?
+
+Usando el comando `api:generate` proporcionado, puedes generar fácilmente todos los archivos clave necesarios, incluyendo controlador, solicitudes, recursos, modelos, migraciones, etc¹.
+
+```bash
+php artisan api:generate Customer \
+  "username:string|age:integer:nullable|company_id:foreignId|status:enum(new,old)" \
+  --all
+```
+
+Después de ejecutar el comando anterior, se crean los siguientes archivos, dándote todo lo que necesitas para empezar a construir la API:
+![Laravel API Toolkit archivos generados](./laravel-api-toolkit-files.png 'Laravel API Toolkit archivos generados')
+
+## Filtrado en Laravel API Toolkit
+
+El filtrado es otra característica útil en este paquete, que te da la capacidad de definir en qué campos puedes filtrar.
+
+```php
+namespace App\Models;
+
+use Essa\APIToolKit\Filters\Filterable;
+
+class Car extends Model
+{
+    use Filterable;
+
+    protected string $default_filters = CarFilters::class;
+
+    // Más código del modelo...
+}
+```
+
+Y la clase `CarFilters` podría verse así:
+
+```php
+namespace App\Filters;
+
+use Essa\APIToolKit\Filters\QueryFilters;
+
+class CarFilters extends QueryFilters
+{
+    protected array $allowedFilters = ['color', 'model_id'];
+
+    protected array $columnSearch = [];
+}
+
+// GET /cars?color=red
+```
+
+## Acciones en Laravel API Toolkit
+
+Las acciones son otra característica que puedes usar en este paquete para encapsular la lógica empresarial.
+
+```php
+namespace App\Actions;
+
+class CreateCar
+{
+    public function execute($data)
+    {
+      // ...
+    }
+}
+
+// Ejemplo de uso en un controlador
+public function store(Request $request)
+{
+    $this->createCar->execute($request->all());
+}
+```
+
+# Despedida
+
+¡Eso es todo! Ahora tienes una comprensión básica de cómo usar **Laravel API Toolkit** para crear una **API REST** en Laravel.
