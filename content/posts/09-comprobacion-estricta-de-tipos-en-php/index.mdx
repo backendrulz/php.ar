@@ -1,0 +1,147 @@
+---
+title: 'Comprobación estricta de tipos en PHP'
+date: 2023-10-18
+description: Descubre cómo la comprobación estricta en PHP puede mejorar la seguridad y la precisión de tu código. Aprende cómo habilitarla, los beneficios de utilizar tipos estrictos y cómo evitar errores comunes. ¡Mejora la calidad de tu código PHP con la comprobación estricta de tipos!
+banner: ./strict-types-php.png
+tags:
+  - laravel
+  - php
+  - tipos
+  - estrictos
+  - validacion
+  - nativo
+---
+
+![Strict types banner](./strict-types-php.png 'Comprobación estricta de tipos en PHP')
+
+La comprobación estricta de tipos es una función que puedes habilitar en aplicaciones PHP para mejorar la seguridad de tipos. Veamos qué significa esto, los beneficios de utilizar tipos estrictos y cómo habilitarlo en tus aplicaciones.
+
+Para habilitar la comprobación estricta de tipos, agrega `declare(strict_types=1)` al principio de tus archivos PHP. Esta declaración impone la tipificación estricta para los parámetros de función y los tipos de retorno de tu aplicación, de modo que si una función espera un parámetro o valor de retorno específico, PHP lanzará un error si se utiliza un tipo incorrecto.
+
+Aquí tienes un ejemplo sencillo que no utiliza `declare(strict_types=1)` :
+
+```php
+function add(int $a, int $b): int
+{
+    return $a + $b;
+}
+```
+
+Llamemos a esta función con argumentos de tipo cadena:
+
+```php
+echo add('1', '2');
+
+// Salida:
+// 3
+```
+
+PHP convierte sin problemas los parámetros de cadena en enteros y devuelve el resultado `3`.
+
+En algunos casos, es posible que estés satisfecho con este comportamiento, como cuando deseas capturar la entrada del usuario en formato de cadena y no deseas intentar convertir los tipos primero. Pero esto también podría tener consecuencias no deseadas que causen errores en tu aplicación.
+
+Agreguemos `declare(strict_types=1);` al principio del ejemplo:
+
+```php
+declare(strict_types=1);
+
+function add(int $a, int $b): int
+{
+    return $a + $b;
+}
+```
+
+Ahora, si llamamos a la función `add` con parámetros de tipo cadena, PHP lanzará un error:
+
+```php
+echo add('1', '2');
+
+// Salida:
+// Fatal error: Uncaught TypeError: Argument 1 passed to add() must be of the type int, string given
+```
+
+PHP lanza un error porque la función `add` esperaba que se pasaran enteros pero recibió cadenas en su lugar.
+
+Si la comprobación estricta de tipos está habilitada y tratamos de devolver un tipo de datos incorrecto desde el método, PHP también lanzará un error.
+
+Por ejemplo, supongamos que nuestra función `add` ahora acepta números de punto flotante en lugar de enteros y que no tenemos habilitada la comprobación estricta de tipos:
+
+```php
+function add(float $a, float $b): int
+{
+    return $a + $b;
+}
+```
+
+Podríamos llamar a la función de la siguiente manera:
+
+```php
+echo add(1.25, 2.25);
+
+// Salida:
+// 3
+```
+
+¿Notaste el problema en la salida?
+
+La respuesta que deberíamos haber recibido es `3.5` . Sin embargo, debido a que hemos definido el tipo de retorno como `int` , PHP convirtió el número de punto flotante en un entero y perdió precisión. Como puedes imaginar, esto podría causar problemas en otras partes de nuestra aplicación donde estamos utilizando este resultado y se podría haber necesitado precisión.
+
+Ahora corrijamos este problema utilizando `declare(strict_types=1)` :
+
+```php
+declare(strict_types=1);
+
+function add(float $a, float $b): int
+{
+    return $a + $b;
+}
+```
+
+Luego, podríamos llamar a la función de la siguiente manera:
+
+```php
+echo add(1.25, 2.25);
+
+// Salida:
+// Fatal error: Uncaught TypeError: add(): Return value must be of type int, float returned
+```
+
+Como podemos ver, al habilitar la comprobación estricta de tipos se muestra que la función no está devolviendo el tipo de datos correcto. Esto es útil porque podría resaltar un posible error que no conocíamos. Luego podríamos tomar las medidas necesarias para:
+
+- Actualizar los tipos de retorno si son incorrectos
+- Actualizar las indicaciones de tipo si son incorrectas
+- Actualizar el cuerpo de la función para devolver el tipo de datos correcto si es incorrecto
+- Corregir cualquier error en el código que llama a la función y que pueda estar pasando el tipo de datos incorrecto a la misma
+
+# ¿Deberías utilizar tipos estrictos?
+
+Creo que es una buena idea utilizar `declare(strict_types=1)` en todos tus archivos PHP. Te brinda la confianza de que estás utilizando los tipos de datos correctos en tu código y puede ayudar a detectar errores, especialmente al agregarlo a bases de código más antiguas.
+
+Si estás utilizando un entorno de desarrollo integrado (IDE) como **PhpStorm**, puedes actualizar tus plantillas para que los nuevos archivos PHP creados dentro del IDE incluyan automáticamente `declare(strict_types=1)` en la parte superior del archivo. Así no necesitarás recordar agregarlo manualmente.
+
+En **PhpStorm**, puedes actualizar tu plantilla para crear nuevas clases PHP de la siguiente manera:
+
+```php
+<?php
+declare(strict_types=1);
+
+#parse("PHP File Header.php")
+
+#if (${NAMESPACE})
+namespace ${NAMESPACE};
+
+#end
+class ${NAME} {
+
+}
+```
+
+También puedes publicar las plantillas de archivos predeterminadas de Laravel para crear archivos PHP cuando ejecutes comandos Artisan como `php artisan make:controller` . Al publicar las plantillas, puedes editarlas y agregar `declare(strict_types=1)` en la parte superior. Esto significa que los archivos que crees utilizando comandos Artisan se crearán con una mayor seguridad de tipos ya habilitada.
+
+Por supuesto, si vas a agregar una comprobación estricta de tipos a tus archivos existentes, te recomiendo tener un conjunto de pruebas de buena calidad en su lugar primero. Es posible que tu código PHP haya estado permitiendo que se pasen tipos de datos incorrectos sin lanzar errores. Sin embargo, al habilitar la comprobación estricta de tipos, tu código será mucho menos tolerante y puede comenzar a lanzar errores. Esto podría hacer que tu aplicación se rompa de manera inesperada para tus usuarios.
+
+También puede que necesites refactorizar parte de tu código para que sea compatible con `declare(strict_types=1)` . Sin embargo, no lo consideraría algo malo. En cambio, míralo como una oportunidad para mejorar la calidad de tu código.
+
+Para ayudarte a agregar `declare(strict_types=1)` a tu código, puedes utilizar una herramienta como **PHPStan** que puede detectar estas incompatibilidades de tipos por ti.
+
+¡Espero que te haya gustado! Nos vemos en un próximo posteo...
