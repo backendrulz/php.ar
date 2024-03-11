@@ -1,0 +1,146 @@
+---
+title: 'PHP 8.3'
+date: 2024-02-24
+description: Descubre las nuevas características de PHP 8.3, como constantes de clase tipificadas, búsqueda dinámica de constantes y miembros de enumeraciones, y mejoras en el rendimiento. ¡Actualiza tu proyecto a PHP 8.3!
+banner: ./php-8.3-logo.png
+tags:
+  - php
+  - php8.3
+  - seguridad
+  - actualizacion
+  - rendimiento
+---
+
+![PHP 8.3 Logo](./php-8.3-logo.png 'Lo nuevo en PHP 8.3')
+
+**PHP 8.3**, trae consigo una serie de nuevas características que mejoran la expresividad, la seguridad y el rendimiento del lenguaje.
+
+Echemos un vistazo a las más destacadas:
+
+# Constantes de clase tipificadas
+
+Ahora podemos declarar el tipo de dato de las constantes de clase, mejorando la legibilidad y evitando errores.
+```php
+class Persona {
+    public const NOMBRE = "Juan Pérez"; // string
+    public const EDAD = 30; // int
+}
+
+echo Persona::NOMBRE . " tiene " . Persona::EDAD . " años.";
+```
+
+# Búsqueda dinámica de constantes de clase y miembros de enumeraciones
+
+Permite acceder a constantes de clase y miembros de enumeraciones de forma dinámica, lo que facilita el desarrollo de código flexible y adaptable.
+```php
+enum EstadoCivil {
+    SOLTERO,
+    CASADO,
+    VIUDO
+}
+
+$estado = EstadoCivil::CASADO;
+
+echo "El estado civil es " . $estado->name . " (" . $estado->value . ").";
+
+$nombreEstado = EstadoCivil::tryFrom(2);
+
+echo "El estado con el valor 2 es " . $nombreEstado->name . ".";
+```
+
+# Nuevo atributo #[Override]
+
+Se utiliza para indicar explícitamente cuando un método está redefiniendo un método de una clase padre, mejorando la seguridad y evitando errores accidentales.
+```php
+class Animal {
+    public function saludar() {
+        echo "Hola!";
+    }
+}
+
+class Perro extends Animal {
+    #[Override]
+    public function saludar() {
+        echo "Guau!";
+    }
+}
+
+$perro = new Perro();
+$perro->saludar(); // Imprime "Guau!"
+```
+
+# Clonación profunda de propiedades de solo lectura
+
+La clonación ahora copia correctamente los valores de las propiedades de solo lectura, lo que era inconsistente en versiones anteriores.
+```php
+class Persona {
+    private readonly string $nombre;
+
+    public function __construct(string $nombre) {
+        $this->nombre = $nombre;
+    }
+
+    public function __clone() {
+        // La propiedad $nombre se clona correctamente
+    }
+}
+
+$persona1 = new Persona("Juan Pérez");
+$persona2 = clone $persona1;
+
+echo "Persona 1: " . $persona1->nombre . "\n";
+echo "Persona 2: " . $persona2->nombre . "\n";
+
+$persona2->nombre = "María García";
+
+echo "Persona 1: " . $persona1->nombre . "\n";
+echo "Persona 2: " . $persona2->nombre . "\n";
+```
+
+# Nueva función json_validate()
+
+Permite validar una cadena **JSON** contra un esquema **JSON**, simplificando la gestión de datos **JSON**.
+
+```php
+$json = '{
+    "nombre": "Juan Pérez",
+    "edad": 30
+}';
+
+$esquema = '{
+    "type": "object",
+    "properties": {
+        "nombre": { "type": "string" },
+        "edad": { "type": "integer" }
+    }
+}';
+
+if (json_validate($json, $esquema)) {
+    echo "El JSON es válido.";
+} else {
+    echo "El JSON no es válido.";
+}
+```
+# Nuevo método Randomizer::getBytesFromString()
+
+Genera una secuencia de bytes a partir de una cadena, útil para la **criptografía** y otras tareas.
+```php
+$bytes = Randomizer::getBytesFromString("Hola mundo!");
+
+echo bin2hex($bytes); // Imprime una cadena hexadecimal que representa los bytes
+```
+# Mejoras en el rendimiento
+
+**PHP 8.3** incluye varias optimizaciones que mejoran el rendimiento general del código.
+
+# Deprecaciones y cambios en el comportamiento
+
+Algunas funciones y características han sido desaprobadas o han cambiado su comportamiento. Es importante revisar la documentación para actualizar el código.
+
+En resumen, **PHP 8.3** es una actualización importante que ofrece nuevas funcionalidades, mejoras en el rendimiento y mayor seguridad.
+
+Te recomiendo actualizar tu proyecto a **PHP 8.3** para aprovechar todas estas ventajas.
+
+¡Espero que esta información te haya sido útil!
+
+¡Hasta la próxima!
