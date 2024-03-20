@@ -1,0 +1,213 @@
+---
+title: 'Laravel 11: novedades y mejoras'
+date: 2024-03-13
+description: Descubre las novedades y mejoras de Laravel 11, la nueva versión del framework PHP más popular. Aprende sobre la nueva estructura de directorios, Laravel Reverb, cambios en las rutas y mucho más.
+banner: ./laravel-11-logo-banner.png
+tags:
+  - laravel
+  - laravel 11
+  - actualizacion
+  - caracteristicas
+  - rendimiento
+  - php 8.2
+---
+
+![PHP 8.3 Logo](./laravel-11-logo-banner.png 'Lo nuevo en PHP 8.3')
+
+## Laravel 11: novedades y mejoras
+
+**Laravel 11** ya está disponible e incluye compatibilidad mínima con **PHP v8.2**, un nuevo paquete **Laravel Reverb**, una estructura de directorios optimizada y más...
+
+## Laravel Reverb
+
+Laravel Reverb es un nuevo servidor **WebSocket** de primera mano para aplicaciones Laravel, que permite la **comunicación en tiempo real** entre el cliente y el servidor. Algunas de las características de Reverb incluyen:
+
+#### Velocidad increíble
+
+**Reverb** está optimizado para la velocidad. Un único servidor puede soportar **miles de conexiones** y canalizar datos sin el retraso y la ineficiencia del **HTTP polling**.
+
+#### Integración perfecta
+
+Desarrolla con las capacidades de broadcasting de Laravel. Deploys con la integración de **Laravel Forge** y **Reverb**. Monitorea con el soporte integrado para **Pulse**.
+
+#### Construido para escalar
+
+Aumenta la capacidad infinitamente utilizando el soporte integrado de **Reverb** para el escalado horizontal con **Redis**, lo que te permite administrar conexiones y canales en **múltiples servidores**.
+
+#### Pusher
+
+**Reverb** utiliza el protocolo **Pusher** para **WebSockets**, haciéndolo inmediatamente compatible con el **broadcasting de Laravel** y **Laravel Echo**.
+
+## Estructura de directorios optimizada
+
+En una instalación nueva, el número de archivos se ha reducido en aproximadamente **69** archivos. **¡Espectacular!**
+
+- Los controladores ya no extienden nada por defecto.
+- No más directorio de middleware.
+
+Actualmente, Laravel incluye nueve middlewares y muchos que nunca personalizarías. Sin embargo, si deseas personalizarlos, se mueven a `App/ServiceProvider`.
+
+Por ejemplo:
+
+```php
+public function boot(): void
+{
+  EncryptCookies::except(['some_cookie']);
+}
+```
+
+## No más Http/Kernel
+
+La mayoría de las cosas que solías hacer en el **Kernel** ahora las puedes hacer en `Bootstrap/App`.
+
+```php
+return Application::configure()
+  ->withProviders ()
+  -›withRouting(
+    web: __DIR__.'/../routes/web.php'
+    commands: __DIR__.'/../routes/console.php',
+  )
+  ->withMiddleware(function(Middleware Smiddleware) {
+    $middleware->web(append: LaraconMiddleware::class):
+  })
+```
+
+## Cambios en las conversiones de modelos
+
+Los **casts de modelos** ahora se definen como un **método** en lugar de una **propiedad**. Cuando se definen como un método, podemos hacer otras cosas, como llamar a otros métodos directamente desde los casts. Aquí hay un ejemplo usando un nuevo `AsEnumCollection` de Laravel 11:
+
+```php
+protected function casts(): array
+{
+  return [
+    'email_verified_at' => 'datetime',
+    'password' => 'hashed',
+    'options'=› AsEnumCollection::of(UserOption::class),
+  ];
+}
+```
+
+## Nuevo Trait Dumpable
+
+Esto tiene como objetivo optimizar el núcleo del **framework**, ya que varias clases actualmente tienen métodos `dd()` o `dump()`. Además, puedes usar este trait `Dumpable` en tus propias clases:
+
+```php
+class Stringable implements JsonSerializable, ArrayAccess
+{
+  use Conditionable, Dumpable, Macroable, Tappable;
+
+  str('foo')->dd();
+  str('foo')->dump();
+}
+```
+
+## Cambios de configuración
+
+**Laravel** tiene muchos archivos de configuración, y **Laravel 11** los elimina, y todas las opciones de configuración caen en cascada. El archivo `.env` se ha expandido para incluir todas las opciones que desees establecer.
+
+## Nuevo método Once
+
+**Laravel 11** incluye un nuevo método helper `once()` que asegura que siempre obtendrás el mismo valor sin importar cuántas veces llames a un método de objeto. La función `once()` es útil cuando tienes código que deseas asegurarte de que se ejecute solo una vez.
+
+## Migraciones predeterminadas reducidas
+
+Cuando inicias una nueva aplicación Laravel, viene con algunas migraciones predeterminadas de **2014** y **2019**. Ahora vendrán con las fechas eliminadas y divididas en solo dos archivos.
+
+## Cambios en las rutas
+
+De forma predeterminada, solo habrá dos archivos de ruta, `console.php` y `web.php`. Las **rutas de API** ahora serán optativas a través de `php artisan install:api`, brindándote el archivo de rutas **API** y **Laravel Sanctum**.
+
+Lo mismo ocurre con el **broadcasting de WebSockets**, `php artisan install:broadcasting`.
+
+## Nueva ruta de Health Check
+
+Laravel 11 incluirá una nueva ruta de **health check** `/up` que dispara un `DiagnosingHealthEvent` para que puedas integrarte mejor con la monitorización del uptime.
+
+## Rotación de APP_KEY
+
+En versiones anteriores de Laravel, si cambiabas tu `APP_KEY` podía provocar **datos corruptos** en la **base de datos**. Laravel 11 tiene una nueva rotación gradual que **NO** dañará los datos antiguos encriptados, utilizando una variable `.env` de lista delimitada por comas `APP_PREVIOUS_KEYS`. **Volverá a encriptar automáticamente** los datos usando la nueva clave.
+
+## Eliminación del Kernel de la consola
+
+Se ha eliminando el Kernel de la consola, y podrás definir tus comandos de la consola directamente en `routes/console.php`.
+
+## Argumentos con nombre
+
+Los **argumentos con nombre** no están cubiertos por las pautas de retrocompatibilidad de Laravel. Es posible que elijan cambiar el nombre de los argumentos de la función cuando sea necesario para mejorar la base de código de Laravel. Al llamar a los métodos de Laravel, usar argumentos con nombre se debe hacer con cautela y con el entendimiento de que los nombres de los parámetros pueden cambiar en el futuro.
+
+## Eager Load Limit
+
+Laravel 11 integra el código del paquete **"eager load limit"**
+
+```php
+User::select('id', 'name')->with([
+  'articles' => fn($query) => $query->limit(5)
+])->get();
+```
+
+## Nuevos comandos Artisan
+
+Se han añadido nuevos comandos **Artisan** para permitir la creación rápida de **clases**, **enums**, **interfaces** y **traits**:
+
+```shell
+php artisan make:class
+php artisan make:enum
+php artisan make:interface
+php artisan make:trait
+```
+
+## Nueva página de bienvenida
+
+![img](https://picperf.io/https://laravelnews.s3.amazonaws.com/images/EHTLs1p9yQmeADY8z3T71KmL7fBtoL41DcQ8Pglv.png)
+
+Junto con **grandes actualizaciones** a Laravel, obtendremos una nueva **página de bienvenida** al crear una nueva aplicación.
+
+## Soporte mínimo de PHP 8.2
+
+Esta fue una decisión temprana, pero las aplicaciones de Laravel 11 requieren un mínimo de **PHP 8.2**. Si estás ejecutando una versión anterior de **PHP**, ahora es un buen momento para actualizarla.
+
+## Se requiere SQLite 3.35.0+
+
+Si usas una base de datos **SQLite**, entonces Laravel 11 requerirá **SQLite 3.35.0** o superior.
+
+## Eliminación de Doctrine DBAL
+
+Laravel ya no depende de **Doctrine DBAL** y registrar **tipos Doctrines** personalizados ya no es necesario para la creación y alteración adecuada de varios tipos de columna que anteriormente requerían tipos personalizados.
+
+## Instalar Laravel 11
+
+La forma más fácil de **instalar Laravel 11** es configurar primero el **Instalador de Laravel**:
+
+```shell
+composer global require laravel/installer
+```
+
+Luego ejecuta:
+
+```shell
+laravel new nombre-del-proyecto
+```
+
+## Actualizar a Laravel 11
+
+**Laravel Shift** es la forma más fácil de actualizar, pero también puedes seguir la guía de actualización en la [documentación](https://laravel.com/docs/master/upgrade#upgrade-11.0) de Laravel
+
+## Política de soporte de Laravel
+
+Para todas las **versiones de Laravel**, se ofrecen correcciones de errores durante **18 meses** y correcciones de seguridad durante **2 años**. Para todas las bibliotecas adicionales, incluyendo **Lumen**, solo la última versión principal recibe correcciones de errores.
+
+| Versión    | PHP (*)   | Lanzamiento           | Correcciones de errores hasta | Correcciones de seguridad hasta |
+| ---------- | --------- | --------------------- | ----------------------------- | ------------------------------- |
+| Laravel 9  | 8.0 - 8.2 | 8 de febrero de 2022  | 8 de agosto de 2023           | 6 de febrero de 2024            |
+| Laravel 10 | 8.1 - 8.3 | 14 de febrero de 2023 | 6 de agosto de 2024           | 4 de febrero de 2025            |
+| Laravel 11 | 8.2 - 8.3 | 12 de marzo de 2024   | 3 de septiembre de 2025       | 12 de marzo de                  |
+
+## Conclusión
+
+**Laravel 11** trae consigo una serie de cambios y mejoras que lo convierten en una versión aún más potente, flexible y fácil de usar. Si estás buscando un **framework PHP** para tu próximo proyecto, **Laravel 11** es una **excelente opción**.
+
+¡Te animo a que explores todas las nuevas características y mejoras que ofrece Laravel 11!
+
+Espero que este resumen te haya sido útil. Si tienes alguna pregunta o comentario, no dudes en dejarlo en los comentarios.
+
+**¡Hasta la próxima!**
