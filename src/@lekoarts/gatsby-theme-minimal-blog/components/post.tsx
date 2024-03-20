@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import type { HeadFC, PageProps } from 'gatsby';
 import * as React from 'react';
-import { jsx, Heading } from 'theme-ui';
+import { jsx, Heading, useColorMode } from 'theme-ui';
 import Layout from './layout';
 import ItemTags from './item-tags';
 import Seo from '@lekoarts/gatsby-theme-minimal-blog/src/components/seo';
@@ -40,6 +40,8 @@ const Post: React.FC<React.PropsWithChildren<PageProps<MBPostProps>>> = ({
   children,
 }) => {
   const { siteUrl } = useSiteMetadata();
+    const [colorMode, setColorMode] = useColorMode<'light' | 'dark'>();
+    const isDark = colorMode === `dark`;
 
   return (
     <Layout>
@@ -98,6 +100,28 @@ const Post: React.FC<React.PropsWithChildren<PageProps<MBPostProps>>> = ({
           title: post.title,
         }}
       />
+    <style>
+        {`
+            h2 {
+                position: relative;
+            }
+
+            h2:before {
+                content: '';
+                width: 100%;
+                height: ${isDark ? '1px' : '2px'};
+                background: #F0F5F9;
+                position: absolute;
+                left: 0px;
+                bottom: 0;
+                right: 0;
+            }
+
+            p {
+                margin-left: 5px
+            }
+        `}
+      </style>
     </Layout>
   );
 };
