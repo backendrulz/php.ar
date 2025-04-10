@@ -1,0 +1,83 @@
+---
+title: 'Laravel 12: Nuevas características y mejoras'
+description: Laravel 12 introduce nuevos kits de inicio para React, Vue y Livewire, además de actualizar dependencias clave. Descubre cómo aprovechar estas novedades en tu próximo proyecto.
+date: 2025-03-12
+banner: ./laravel-12-logo-banner.jpg
+tags:
+  - laravel
+  - laravel 12
+  - framework
+  - php 8.2
+---
+
+![Laravel 12 banner](./laravel-12-logo-banner.jpg 'Laravel 12')
+
+Laravel 12 ya está disponible, introduciendo nuevos kits de inicio para **React**, **Vue** y **Livewire**, además de actualizar las dependencias más recientes.
+
+El enfoque principal este año en el núcleo del framework Laravel ha sido el mantenimiento, la actualización de dependencias externas y la entrega de nuevos kits de inicio:
+
+> Este es principalmente un lanzamiento centrado en el mantenimiento que actualiza las dependencias externas y tiene cambios mínimos o pocas características importantes.
+>
+> Debido a esto, la gran mayoría de las aplicaciones podrán actualizarse sin necesidad de realizar cambios en el código de tu aplicación. 🚀
+>
+> A medida que se construyen más aplicaciones con Laravel, estamos enfocándonos en enviar nuevas funciones continuamente durante todo el año sin introducir cambios que rompan, utilizando nuestras versiones anuales para actualizar dependencias o abordar la compatibilidad con nuevas versiones de PHP.
+
+Este año hemos visto muchas características destacadas en las versiones de **Laravel 11**, y seguiremos viendo actualizaciones regulares para **Laravel 12** a medida que avance el año.
+
+---
+
+## Introducción de nuevos kits de inicio
+
+Laravel 12 incluye nuevos kits de inicio con soporte para **React**, **Vue** o **Livewire**. Estos incluyen componentes **Shadcn**, y para el stack **Livewire**, hay una versión gratuita de los componentes **Flux**. Además, cada kit de inicio ofrece una variante de **WorkOS AuthKit**:
+
+- Autenticación social
+- Autenticación con claves de paso (Passkey)
+- Autenticación basada en correo electrónico
+- SSO con WorkOS
+
+Puedes aprender más sobre cómo usar los nuevos kits de inicio en la [documentación](https://laravel.com/docs/12.x/starter-kits).
+
+---
+
+## Continúa el soporte mínimo para PHP 8.2
+
+Laravel 12 sigue requiriendo PHP 8.2 como la versión mínima de PHP. Como se mencionó, "Este es principalmente un lanzamiento centrado en el mantenimiento que actualiza las dependencias externas y tiene cambios mínimos o pocas características importantes."
+
+---
+
+## Instalar Laravel 12
+
+Si estás usando [Laravel Herd](https://herd.laravel.com/), actualiza a la última versión para obtener el nuevo instalador. Sin **Herd**, puedes usar el instalador de Laravel:
+
+```bash
+composer global require laravel/installer
+```
+
+Luego ejecuta:
+
+```bash
+laravel new nombreproyecto
+```
+
+---
+
+## Actualizar a Laravel 12
+
+[Laravel Shift](https://laravelshift.com/) es la forma más fácil de actualizar, pero también puedes seguir la guía de actualización en la [documentación](https://laravel.com/docs/12.x/upgrade) de Laravel.
+
+---
+
+## Política de soporte de Laravel
+
+Para todas las versiones de Laravel, se proporcionan correcciones de errores durante **18 meses** y correcciones de seguridad durante **2 años**. Para todas las bibliotecas adicionales, incluida **Lumen**, solo la última versión mayor recibe correcciones de errores.
+
+| Versión       | PHP (*)        | Fecha de lanzamiento  | Correcciones de errores hasta | Correcciones de seguridad hasta |
+| ------------- | -------------- | --------------------- | ----------------------------- | ------------------------------- |
+| Laravel 10    | 8.1 - 8.3      | 14 de febrero de 2023 | 6 de agosto de 2024           | 4 de febrero de 2025            |
+| Laravel 11    | 8.2 - 8.4      | 12 de marzo de 2024   | 3 de septiembre de 2025       | 12 de marzo de 2026             |
+| Laravel 12    | 8.2 - 8.4      | 24 de febrero de 2025 | 13 de agosto de 2026          | 24 de febrero de 2027           |
+| Laravel 13    | Por determinar | Por determinar        | Por determinar                | Por determinar                  |
+
+---
+
+Con Laravel 12, los desarrolladores pueden disfrutar de un **framework** más robusto y flexible, listo para adaptarse a las necesidades modernas de desarrollo.
