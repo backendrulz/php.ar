@@ -18,6 +18,8 @@
     },
     "dependencies": {
         "@lekoarts/gatsby-theme-minimal-blog": "^6.0.5",
+        "ajv": "^6.12.6",
+        "ajv-keywords": "^3.5.2",
         "gatsby": "^5.5.0",
         "gatsby-plugin-disqus": "^1.2.6",
         "gatsby-plugin-feed": "^5.5.0",
