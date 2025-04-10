@@ -1,0 +1,273 @@
+---
+title: 'Principios SOLID en Laravel: Cómo mejorar tu código'
+description: Aprende a aplicar los principios SOLID en Laravel para escribir código más mantenible, escalable y robusto. Exploramos ejemplos prácticos de cada principio con casos de uso en Laravel.
+date: 2025-04-01
+banner: ./principios-solid-banner.png
+tags:
+- laravel
+- SOLID
+- programacion
+- buenas practicas
+---
+
+![Principios SOLID](./principios-solid-banner.png 'SOLID')
+
+**SOLID** es un acrónimo para cinco principios de diseño que ayudan a los desarrolladores a escribir software mantenible y escalable. Estos principios son particularmente útiles en aplicaciones Laravel, asegurando que tu código sea modular, fácil de probar y extender.
+
+## 1. Principio de Responsabilidad Única (SRP)
+
+### Definición
+
+> Una clase debe tener solo una razón para cambiar.
+
+Cada clase debe tener una única responsabilidad, es decir, debe realizar una sola tarea y no estar sobrecargada con múltiples funciones.
+
+### Ejemplo (Controlador en Laravel)
+
+#### ❌ Mal Ejemplo:
+
+```php
+class UserController extends Controller
+{
+    public function store(Request $request)
+    {
+        $user = User::create($request->all()); // Crea un nuevo usuario
+        Mail::to($user->email)->send(new WelcomeMail($user)); // Envía correo de bienvenida
+        Log::info('Usuario registrado: ' . $user->email); // Registra en logs
+    }
+}
+```
+
+#### ✅ Buen Ejemplo:
+
+```php
+class UserController extends Controller
+{
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService; // Inyecta el servicio de usuario
+    }
+
+    public function store(Request $request)
+    {
+        $this->userService->registerUser($request->all()); // Llama al método del servicio
+    }
+}
+```
+
+```php
+class UserService
+{
+    public function registerUser(array $data)
+    {
+        $user = User::create($data); // Crea un nuevo usuario
+        Mail::to($user->email)->send(new WelcomeMail($user)); // Envía correo de bienvenida
+        Log::info('Usuario registrado: ' . $user->email); // Registra en logs
+    }
+}
+```
+
+---
+
+## 2. Principio de Abierto/Cerrado (OCP)
+
+### Definición
+
+> Las entidades de software deben estar abiertas para su extensión pero cerradas para su modificación.
+
+### Ejemplo (Sistema de Pagos en Laravel)
+
+#### ❌ Mal Ejemplo (Viola el OCP):
+
+```php
+class PaymentProcessor
+{
+    public function process($paymentMethod)
+    {
+        if ($paymentMethod == 'paypal') {
+            // Procesa pago con PayPal
+        } elseif ($paymentMethod == 'stripe') {
+            // Procesa pago con Stripe
+        }
+    }
+}
+```
+
+#### ✅ Buen Ejemplo (Cumple con el OCP):
+
+```php
+interface PaymentGateway
+{
+    public function process(); // Define el método para procesar pagos
+}
+
+class PayPalPayment implements PaymentGateway
+{
+    public function process()
+    {
+        // Procesa pago con PayPal
+    }
+}
+
+class StripePayment implements PaymentGateway
+{
+    public function process()
+    {
+        // Procesa pago con Stripe
+    }
+}
+
+class PaymentProcessor
+{
+    public function process(PaymentGateway $gateway)
+    {
+        $gateway->process(); // Usa el gateway para procesar el pago
+    }
+}
+```
+
+---
+
+## 3. Principio de Sustitución de Liskov (LSP)
+
+### Definición
+
+> Los objetos de una clase derivada deben poder reemplazar a los objetos de la clase base sin afectar la corrección del programa.
+
+### Ejemplo (Patrón Repositorio en Laravel)
+
+#### ❌ Mal Ejemplo:
+
+```php
+class UserRepository
+{
+    public function getUsers()
+    {
+        return User::all(); // Obtiene todos los usuarios
+    }
+}
+
+class AdminRepository extends UserRepository
+{
+    public function getUsers()
+    {
+        return Admin::all(); // Obtiene todos los administradores
+    }
+}
+```
+
+#### ✅ Buen Ejemplo:
+
+```php
+interface UserRepositoryInterface
+{
+    public function getUsers(); // Define el método para obtener usuarios
+}
+
+class UserRepository implements UserRepositoryInterface
+{
+    public function getUsers()
+    {
+        return User::all(); // Obtiene todos los usuarios
+    }
+}
+
+class AdminRepository implements UserRepositoryInterface
+{
+    public function getUsers()
+    {
+        return Admin::all(); // Obtiene todos los administradores
+    }
+}
+```
+
+---
+
+## 4. Principio de Segregación de Interfaces (ISP)
+
+### Definición
+
+> Una clase no debe verse obligada a implementar interfaces que no utiliza.
+
+### Ejemplo (Interfaces de Notificaciones en Laravel)
+
+#### ❌ Mal Ejemplo:
+
+```php
+interface NotificationInterface
+{
+    public function sendEmail(); // Define el método para enviar correo
+    public function sendSMS(); // Define el método para enviar SMS
+}
+
+class EmailNotification implements NotificationInterface
+{
+    public function sendEmail() {}
+    public function sendSMS() { throw new Exception("No implementado"); } // Método no utilizado
+}
+```
+
+#### ✅ Buen Ejemplo:
+
+```php
+interface EmailNotificationInterface
+{
+    public function sendEmail(); // Define el método para enviar correo
+}
+
+interface SMSNotificationInterface
+{
+    public function sendSMS(); // Define el método para enviar SMS
+}
+
+class EmailNotification implements EmailNotificationInterface
+{
+    public function sendEmail() {}
+}
+```
+
+---
+
+## 5. Principio de Inversión de Dependencias (DIP)
+
+### Definición
+
+> Depende de abstracciones, no de implementaciones concretas.
+
+### Ejemplo (Contenedor de Servicios en Laravel)
+
+#### ❌ Mal Ejemplo:
+
+```php
+class OrderService
+{
+    protected $paymentGateway;
+
+    public function __construct()
+    {
+        $this->paymentGateway = new PayPalPayment(); // Instancia directamente PayPal
+    }
+}
+```
+
+#### ✅ Buen Ejemplo:
+
+```php
+class OrderService
+{
+    protected $paymentGateway;
+
+    public function __construct(PaymentGateway $paymentGateway)
+    {
+        $this->paymentGateway = $paymentGateway; // Inyecta el gateway de pagos
+    }
+}
+```
+
+---
+
+## Conclusión
+
+Seguir los principios SOLID en Laravel lleva a un mejor diseño de software, facilita la depuración y crea aplicaciones más escalables. Ignorarlos resulta en código acoplado, difícil de mantener y propenso a errores.
