@@ -1,0 +1,101 @@
+---
+title: 'PHP yield: Generadores y optimización de memoria'
+description: Aprende cómo usar yield en PHP para crear generadores y optimizar el uso de memoria en tus aplicaciones. Ejemplos prácticos y casos de uso reales.
+date: 2025-04-10
+tags:
+  - php
+  - yield
+  - generadores
+  - memoria
+  - optimizacion
+  - rendimiento
+---
+
+Hoy me enfrenté a un desafío: necesitaba escribir un comando para procesar registros almacenados en una base de datos remota. Para listar los registros, utilicé el método `fetchRecords`, que interactúa directamente con una API RESTful:
+
+```php
+ApiClient::create('database', $config)
+ ->fetchRecords([
+     'Table' => 'usuarios',
+     'Limit' => 1000,
+ ]);
+```
+
+Este método devuelve hasta mil registros por solicitud. Pero, dado que la tabla contiene cientos de miles de filas, necesitaba una forma de hacer múltiples llamadas para obtener todos los datos. En bases de datos **SQL**, esto se logra fácilmente con `LIMIT` y `OFFSET`. Sin embargo, ¿cómo manejarlo cuando trabajamos con **APIs** **HTTP**?
+
+Por suerte, la **API** incluye un parámetro llamado `NextPageToken`, que permite obtener páginas adicionales de resultados. Este token se incluye en cada respuesta cuando hay más datos disponibles. Así que decidí implementar algo como esto:
+
+```php
+public function handle(): void
+{
+ $apiClient = ApiClient::create('database', $config);
+ $nextPageToken = null;
+
+ do {
+     $response = $apiClient->fetchRecords([
+         'Table' => 'usuarios',
+         'NextPageToken' => $nextPageToken,
+     ]);
+
+     foreach ($response->get('Data') as $registro) {
+         $this->procesarRegistro($registro);
+     }
+
+     $nextPageToken = $response->get('NextPageToken');
+     $hayMasResultados = $response->get('HasMore');
+ } while ($hayMasResultados);
+}
+```
+
+Aquí, el campo `HasMore` indica si quedan más resultados por recuperar, mientras que `NextPageToken` nos da un puntero para continuar la paginación.
+
+Sin embargo, extraer los registros de la **API** es solo una parte de lo que necesito hacer. No quería que todo este código complicado llenara el método principal de mi comando. Prefería algo más limpio, como esto:
+
+```php
+public function handle(): void
+{
+ foreach ($this->obtenerRegistros() as $registro) {
+     $this->procesarRegistro($registro);
+ }
+}
+```
+
+Una opción podría ser mover el bucle `do-while` a un método separado y devolver todos los resultados en un **array**. Pero dado que estamos trabajando con cientos de miles de registros, esta solución no es práctica. Necesitaba una forma de encapsular las llamadas **HTTP** en un método independiente, mientras iteraba sobre los resultados de manera eficiente. Aquí es donde entra en juego `yield`.
+
+```php
+public function handle(): void
+{
+ $this->apiClient = ApiClient::create('database', $config);
+
+ foreach ($this->obtenerRegistros() as $registro) {
+     $this->procesarRegistro($registro);
+ }
+}
+
+// El tipo de retorno del método ahora es iterable
+private function obtenerRegistros(): iterable
+{
+ $nextPageToken = null;
+
+ do {
+     $respuesta = $this->apiClient->fetchRecords([
+         'Table' => 'usuarios',
+         'NextPageToken' => $nextPageToken,
+     ]);
+
+     foreach ($respuesta->get('Data') as $fila) {
+         // Usamos yield para entregar los resultados uno a uno
+         yield $fila;
+     }
+
+     $nextPageToken = $respuesta->get('NextPageToken');
+     $hayMasResultados = $respuesta->get('HasMore');
+ } while ($hayMasResultados);
+}
+```
+
+Al usar `yield` en lugar de `return`, convertimos este método en un [Generador](https://www.php.net/manual/es/language.generators.overview.php). Cuando un método utiliza `return`, todo su contexto se descarta después de devolver el resultado. Con `yield`, en cambio, el estado del generador se conserva entre llamadas. Esto significa que podemos pausar y reanudar la ejecución del método, paginando los resultados de manera eficiente según sea necesario.
+
+Este enfoque nos permite iterar sobre cada registro en la tabla, procesándolos uno por uno, mientras realizamos llamadas adicionales a la API para obtener más resultados cuando sea necesario.
+
+Me sorprende que haya pasado tantos años sin necesitar esta herramienta, pero ahora tengo un recurso más en mi repertorio para futuros proyectos. Si quieres saber más sobre `yield`, puedes consultar la [documentación oficial de PHP sobre generadores](https://www.php.net/manual/es/language.generators.syntax.php#control-structures.yield).
