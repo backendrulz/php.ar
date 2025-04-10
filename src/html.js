@@ -13,7 +13,7 @@ export default function HTML(props) {
         />
         {props.headComponents}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9592851870578890"
-     crossorigin="anonymous"></script>
+     crossOrigin="anonymous"></script>
       </head>
       <body {...props.bodyAttributes}>
         {props.preBodyComponents}
