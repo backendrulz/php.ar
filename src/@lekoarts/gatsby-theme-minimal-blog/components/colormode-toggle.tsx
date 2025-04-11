@@ -86,12 +86,14 @@ const FallbackIcon = () => (
 );
 
 interface ITogglePrimitiveProps {
-  fallback?: React.ReactNode;
+  fallback?: React.ReactElement;
+  children: React.ReactElement;
 }
 
-const TogglePrimitive: React.FC<
-  React.PropsWithChildren<ITogglePrimitiveProps>
-> = ({ children, fallback = undefined }) => {
+const TogglePrimitive: React.FC<ITogglePrimitiveProps> = ({
+  children,
+  fallback = undefined
+}) => {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -102,10 +104,10 @@ const TogglePrimitive: React.FC<
     if (!fallback) {
       return null;
     }
-    return <React.Fragment>{fallback}</React.Fragment>;
+    return fallback;
   }
 
-  return <React.Fragment>{children}</React.Fragment>;
+  return children;
 };
 
 const ColorModeToggle = () => {
