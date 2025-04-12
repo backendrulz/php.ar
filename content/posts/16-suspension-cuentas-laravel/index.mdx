@@ -1,0 +1,209 @@
+---
+title: 'Cómo implementar suspensión de cuentas en Laravel'
+date: 2025-04-12
+description: Una guía práctica para implementar suspensiones permanentes y temporales de usuarios en Laravel usando middleware, campos de base de datos y tareas programadas.
+banner: ./you-are-banned.png
+tags:
+  - laravel
+  - php
+  - autenticación
+  - ban
+  - suspender
+  - middleware
+---
+
+![You are banned](./you-are-banned.png 'Estás suspendido')
+
+La suspensión de cuentas es una funcionalidad común en aplicaciones web que te permite restringir el acceso a los usuarios de forma permanente o temporal. Laravel ofrece herramientas flexibles para lograr esto utilizando campos en la base de datos, middleware y tareas programadas. En esta guía aprenderás cómo implementar ambos tipos de suspensiones.
+
+## Suspensión Permanente
+
+Un usuario suspendido permanentemente no podrá acceder a la aplicación hasta que sea reactivado manualmente.
+
+### 1. Agregar un Campo de Suspensión a la Tabla de Usuarios
+
+Para registrar si un usuario está suspendido, agrega una columna llamada `banned_at` en la tabla `users`:
+
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->timestamp('banned_at')->nullable();
+});
+```
+
+### 2. Actualizar el Modelo de Usuario
+
+Agrega un método en el modelo `User` para verificar si un usuario está suspendido:
+
+```php
+class User extends Authenticatable
+{
+    // Determina si el usuario está suspendido
+    public function isBanned(): bool
+    {
+        return !is_null($this->banned_at);
+    }
+}
+```
+
+### 3. Crear Middleware para Restringir Acceso a Usuarios Suspendidos
+
+Este middleware bloqueará el acceso a cualquier usuario marcado como suspendido:
+
+```php
+public function handle(Request $request, Closure $next)
+{
+    if (auth()->check() && auth()->user()->isBanned()) {
+        abort(403, 'Tu cuenta ha sido suspendida.');
+    }
+
+    return $next($request);
+}
+```
+
+### 4. Métodos para Suspender y Reactivar Usuarios
+
+Implementa funciones en un controlador para gestionar las suspensiones:
+
+```php
+// Suspende un usuario permanentemente
+public function ban(User $user)
+{
+    $user->update([
+        'banned_at' => now(),
+    ]);
+
+    return response()->json(['message' => 'Usuario suspendido exitosamente.']);
+}
+
+// Reactiva un usuario previamente suspendido
+public function unban(User $user)
+{
+    $user->update([
+        'banned_at' => null,
+    ]);
+
+    return response()->json(['message' => 'Usuario reactivado exitosamente.']);
+}
+```
+
+---
+
+## Suspensión Temporal
+
+En este caso, los usuarios son suspendidos por un período específico y se reactivan automáticamente al finalizar ese tiempo.
+
+### 1. Modificar la Tabla de Usuarios
+
+Agrega un campo llamado `banned_until` para almacenar la fecha de expiración de la suspensión:
+
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->timestamp('banned_until')->nullable();
+});
+```
+
+### 2. Actualizar el Modelo de Usuario
+
+Modifica el método `isBanned()` para comprobar si la suspensión sigue activa:
+
+```php
+class User extends Authenticatable
+{
+    // Verifica si el usuario tiene una suspensión activa
+    public function isBanned(): bool
+    {
+        return !is_null($this->banned_until) && now()->lessThan($this->banned_until);
+    }
+}
+```
+
+### 3. Middleware para Restringir Acceso a Usuarios Suspendidos Temporalmente
+
+El middleware sigue siendo similar, pero ahora verifica el campo `banned_until`:
+
+```php
+public function handle(Request $request, Closure $next)
+{
+    if (auth()->check() && auth()->user()->isBanned()) {
+        abort(403, 'Tu cuenta está suspendida temporalmente.');
+    }
+
+    return $next($request);
+}
+```
+
+### 4. Métodos para Suspender y Reactivar Usuarios Temporalmente
+
+Establece una fecha futura para las suspensiones temporales:
+
+```php
+// Suspende un usuario durante 5 días
+public function temporaryBan(User $user)
+{
+    $user->update([
+        'banned_until' => now()->addDays(5),
+    ]);
+
+    return response()->json(['message' => 'Usuario suspendido por 5 días.']);
+}
+
+// Reactiva un usuario antes de tiempo
+public function liftBan(User $user)
+{
+    $user->update([
+        'banned_until' => null,
+    ]);
+
+    return response()->json(['message' => 'Suspensión levantada exitosamente.']);
+}
+```
+
+### 5. Automatizar la Reactivación con Tareas Programadas
+
+Crea un comando Artisan para eliminar las suspensiones caducadas y configúralo en el scheduler.
+
+#### Comando para Levantar Suspensiones Caducadas
+
+```php
+namespace App\Console\Commands;
+
+use App\Models\User;
+use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
+
+class LiftExpiredBans extends Command
+{
+    protected $signature = 'ban:lift';
+    protected $description = 'Levanta automáticamente las suspensiones caducadas';
+
+    public function handle()
+    {
+        User::whereNotNull('banned_until')
+            ->where('banned_until', '<=', Carbon::now())
+            ->update([
+                'banned_until' => null,
+            ]);
+    }
+}
+```
+
+#### Configuración del Scheduler
+
+Programa el comando para ejecutarse cada hora añadiendo la siguiente línea en el archivo `app/Console/Kernel.php`:
+
+```php
+$schedule->command('ban:lift')->hourly();
+```
+
+---
+
+## Conclusión
+
+En esta guía aprendiste a implementar suspensiones permanentes y temporales en Laravel mediante:
+
+- Campos en la base de datos (`banned_at` o `banned_until`).
+- Middleware para restringir el acceso a usuarios suspendidos.
+- Métodos en controladores para gestionar las suspensiones.
+- Un comando programado para levantar suspensiones automáticamente.
+
+Con estos pasos podrás gestionar eficazmente el acceso de los usuarios y asegurarte de cumplir con las políticas de tu aplicación.
