@@ -1,0 +1,69 @@
+---
+title: 'Cómo manejar correctamente la configuración en Laravel'
+date: 2025-04-18
+description: Aprende a gestionar los valores de configuración en Laravel para evitar problemas comunes y mejorar el mantenimiento de tu aplicación.
+banner: ./configuracion-laravel-banner.png
+tags:
+    - laravel
+    - php
+    - config
+    - env
+---
+
+![Configuración en Laravel banner](./configuracion-laravel-banner.png 'Configuración en Laravel')
+
+Si has trabajado con Laravel, probablemente hayas usado `env()` para obtener valores del archivo `.env`. También es probable que hayas visto `config()` en acción. Pero, ¿sabes cuándo usar cada uno? Elegir incorrectamente puede causar problemas inesperados, especialmente en producción.
+
+### ¿Por qué no deberías usar `env()` directamente?
+
+1. **Los valores de `.env` pueden ser reemplazados en producción**
+   Entornos como Docker, pipelines de CI/CD o servidores específicos pueden establecer variables de entorno a nivel del sistema que sobrescriban las claves de tu archivo `.env`. Esto fue exactamente lo que me pasó: mi clave de API fue reemplazada por una variable externa, y mi aplicación nunca detectó el valor correcto. En lugar de eso, estaba recibiendo `null`.
+
+2. **Laravel almacena en caché la configuración, no `.env`**
+   Cuando ejecutas `php artisan config:cache` o cuando el entorno (`APP_ENV`) está configurado como producción, Laravel carga todos los valores de configuración una vez y los guarda en un archivo de caché. Después de eso, Laravel ya no revisa el archivo `.env` hasta que limpias la caché.
+
+   Por ejemplo, si usas `env('API_KEY')` en tu código y luego actualizas el archivo `.env`, tu aplicación no verá el nuevo valor hasta que limpies la caché de configuración.
+
+3. **Difícil de mantener y depurar**
+   Imagina que necesitas cambiar el nombre de una clave y `env('API_KEY')` está esparcido por todo tu código. Ahora tendrás que buscar y actualizar manualmente cada instancia. Peor aún, si algo deja de funcionar, estarás buscando en todo el proyecto para entender por qué el valor no se está leyendo correctamente.
+
+---
+
+### La forma correcta: Usa `config()`
+
+La forma adecuada de manejar tu configuración puede ahorrarte mucha frustración. En lugar de llamar a `env()` en tu código, almacena todos los valores dependientes del entorno en los archivos de configuración de Laravel.
+
+Aquí te explico cómo hacerlo:
+
+1. Crea un archivo de configuración (o actualiza uno existente) en la carpeta `config` y usa `env()` aquí. Como estaba integrando una **API** de mensajería, creé un archivo `config/messaging.php`:
+
+   ```php
+   return [
+       'api_key' => env('MESSAGING_API_KEY'),
+       'webhook_secret' => env('MESSAGING_WEBHOOK_SECRET'),
+   ];
+   ```
+
+2. Guarda los valores en tu archivo `.env`:
+
+   ```
+   MESSAGING_API_KEY=tu_clave_de_api
+   MESSAGING_WEBHOOK_SECRET=tu_secreto_webhook
+   ```
+
+3. Ahora, usa `config()` en lugar de `env()` en tu código:
+
+   ```php
+   $apiKey = config('messaging.api_key');
+   $webhookSecret = config('messaging.webhook_secret');
+   ```
+
+4. Si cambias algún valor en `.env`, limpia la caché de configuración:
+
+   ```bash
+   php artisan config:clear
+   ```
+
+   Si necesitas renombrar una clave, no tendrás que actualizar muchos archivos. Solo modifica `config/messaging.php` y limpia la caché.
+
+Usar `config()` en lugar de `env()` no solo hace que tu aplicación sea más robusta y fácil de mantener, sino que también evita sorpresas al desplegar en producción. Este pequeño cambio puede ahorrarte horas de **debugging** y asegurarte de que tu aplicación funcione correctamente en todos los entornos.
