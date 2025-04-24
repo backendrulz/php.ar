@@ -1,0 +1,75 @@
+---
+title: 'El evento JobQueueing en Laravel: Una herramienta poderosa para la gestión de colas'
+date: 2025-04-24
+description: Descubre cómo el nuevo evento JobQueueing en Laravel permite un control más preciso sobre las colas y los trabajos antes de ser enviados al sistema de colas.
+banner: ./job-queueing-laravel-banner.png
+tags:
+  - laravel
+  - php
+  - colas
+  - jobs
+  - eventos
+  - queue
+  - performance
+---
+
+![Job Queueing en Laravel banner](./job-queueing-laravel-banner.png 'Job Queueing en Laravel')
+
+El sistema de colas de Laravel se ha vuelto aún más potente gracias al nuevo evento **JobQueueing**. Este gancho pre-envío crea oportunidades frescas para monitorear y manipular trabajos justo antes de que ingresen al sistema de colas.
+
+La arquitectura basada en eventos del sistema de colas de Laravel ya ofrece varios puntos de intervención en el ciclo de vida, como **JobProcessing** y **JobProcessed**. El evento **JobQueueing** amplía esta capacidad permitiendo acceder a una fase anterior: precisamente cuando un trabajo está a punto de ser enviado al proveedor de colas.
+
+Aquí tienes un ejemplo sencillo de cómo implementar este nuevo evento:
+
+```php
+use Illuminate\Queue\Events\JobQueueing;
+use Illuminate\Support\Facades\Event;
+
+// Registrar un listener para el evento JobQueueing
+Event::listen(function (JobQueueing $event) {
+    // Extraer información sobre el trabajo que se está encolando
+    $job = $event->job; // Trabajo que se está encolando
+    $connectionName = $event->connectionName; // Nombre de la conexión de la cola
+    $payload = $event->payload; // Datos del trabajo
+
+    // Aquí puedes agregar lógica personalizada antes de que el trabajo entre en la cola
+});
+```
+
+Esta funcionalidad abre numerosas aplicaciones prácticas para la gestión y monitoreo de colas. Por ejemplo, podrías implementar un registro específico para entornos de desarrollo:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Queue\Events\JobQueueing;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Log;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        // Crear un logger de trabajos para desarrollo local
+        Event::listen(function (JobQueueing $event) {
+            if (app()->environment('local')) {
+                Log::info('Encolando trabajo', [
+                    'trabajo' => get_class($event->job), // Clase del trabajo
+                    'conexión' => $event->connectionName, // Conexión utilizada
+                    'cola' => $event->payload['queue'] ?? 'default' // Nombre de la cola
+                ]);
+            }
+        });
+    }
+}
+```
+
+Este enfoque permite a los equipos construir tableros completos de actividad de colas o implementar lógica especializada que necesita ejecutarse justo antes de que los trabajos entren en el sistema de colas. Por ejemplo, podrías extender esta funcionalidad para:
+
+- Agregar metadatos personalizados a los trabajos.
+- Aplicar límites de velocidad para tipos específicos de trabajos.
+- Redirigir dinámicamente trabajos a diferentes colas según la carga del sistema.
+
+Con **JobQueueing**, Laravel proporciona una herramienta flexible y poderosa para optimizar y controlar el flujo de trabajos en tu aplicación.
