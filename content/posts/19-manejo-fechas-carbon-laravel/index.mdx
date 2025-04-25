@@ -1,0 +1,86 @@
+---
+title: 'Manejo avanzado de fechas con Carbon en Laravel'
+date: 2025-04-24
+description: Explora las características avanzadas de Carbon para manipular fechas en Laravel. Desde formateo y zonas horarias hasta cálculos complejos y localización, aprende a dominar esta potente librería.
+banner: ./carbon-laravel-banner.png
+tags:
+  - laravel
+  - php
+  - carbon
+  - fechas
+  - datetime
+  - timezone
+  - localization
+---
+
+![Carbon en Laravel banner](./carbon-laravel-banner.png 'Carbon en Laravel')
+
+La librería **Carbon** en Laravel revoluciona la forma en que trabajamos con fechas, ofreciendo métodos especializados para navegar por el calendario sin esfuerzo. Estas funciones simplifican operaciones complejas como encontrar días específicos o calcular periodos de tiempo.
+
+Veamos cómo funciona esta "navegación temporal" con ejemplos prácticos:
+
+```php
+$ahora = Carbon::now(); // 2025-04-24 09:15:00
+
+// Próxima hora específica
+$ahora->next('14:30');      // 2025-04-24 14:30:00
+
+// Siguiente viernes
+$ahora->next('Friday');     // 2025-04-20 00:00:00
+
+// Domingo anterior
+$ahora->previous('Sunday'); // 2025-04-20 00:00:00
+```
+
+Estos métodos son especialmente útiles en sistemas de reservas o planificación:
+
+```php
+class Scheduler
+{
+    public function findAvailableSlot(Carbon $date)
+    {
+        // Si es fin de semana, mover al lunes
+        if ($date->isWeekend()) {
+            $date = $date->next('Monday')->setTime(8, 0);
+        }
+
+        // Buscar próximo horario disponible
+        return $date->next('10:00');
+    }
+
+    public function scheduleMaintenance(Carbon $startDate)
+    {
+        return [
+            'initial_check' => $startDate->next('Tuesday')->setTime(13, 0),
+            'full_maintenance' => $startDate->next('Tuesday')->addWeek()->setTime(13, 0),
+            'backup_window' => $startDate->nextWeekendDay()->setTime(20, 0)
+        ];
+    }
+}
+```
+
+Carbon elimina la necesidad de cálculos manuales complejos, permitiendo:
+- Encontrar días hábiles automáticamente
+- Programar eventos recurrentes
+- Ajustar horarios según condiciones específicas
+- Manejar excepciones de calendario
+
+La clave está en combinar métodos como `next()`, `previous()`, `nextWeekday()` y modificadores de tiempo para crear flujos de trabajo intuitivos. Por ejemplo, para sistemas de reservas:
+
+```php
+$reservation = Carbon::parse('2024-04-10');
+
+// Lógica para entrega de pedidos:
+$delivery = $reservation
+    ->next('Wednesday') // Próximo miércoles
+    ->when($reservation->isWeekday(), function ($date) {
+        return $date->addDay(); // +1 día si es laborable
+    })
+    ->setTime(17, 0);
+```
+
+Este enfoque no solo simplifica el código, sino que también lo hace más resiliente ante cambios de requisitos. Carbon maneja automáticamente aspectos como:
+- Diferencias de zonas horarias
+- Años bisiestos
+- Reglas de días hábiles locales
+- Formatos de fecha personalizados
